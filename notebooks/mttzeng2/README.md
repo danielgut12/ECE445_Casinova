@@ -81,3 +81,20 @@ Danny and I discussed which parts we're necessary for the project, and we ended 
 - USB-A Breakout Board (Female)
 
 With these parts, we should be able to complete the breadboard demo section of this project.
+
+## **3/3/24: Reconviened With Danny with Physical Parts**
+
+Discussed the parts we ordered from Amazon. 
+
+We also worked on the power subsystem in the schematic
+
+![Power Schematic](./media/power_sch.png)
+
+We decided, as per our TA Jason's advice, to use a Switching Regulator when it came to converting from 12V to 5V, and to use a LDO when moving from 5V to 3.3V.
+
+We also added to our schematic the "Power-In" input, which will support a 12V 6A power supply. We'll plan on testing this on the oscilliscope first, and once we get the successful specs for our power, we'll purchase a power supply then.
+
+[Switching Regulator Resource](https://www.circuitstune.com/2011/12/12-to-5-volt-dc-dc-converter-circuit.html)
+
+[LDO Resource](https://www.electronics-lab.com/project/3-3v-voltage-regulator/)
+
