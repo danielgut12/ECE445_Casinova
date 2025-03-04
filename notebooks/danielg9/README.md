@@ -50,4 +50,3 @@ Meeting with Matt to finalize the parts that were needed for our breadboard demo
 Now that the motor drivers were in, I was finally able to get my hands dirty with testing. I haven't worked with drivers before so the only goal for today was to see if I can them them running with the limited supply of voltage. The batteries didn't have the voltage required and the external car battery didn't have the required current to produce motor speed. I was able to debug this with the Nema 17 stepper motor and the DRV8825 driver. You can hear the gears humming inside, but it couldn't spin.
 
 ![First Operations with Nema 17 Stepper Motor](../media/Nema17StepperMotorArdiunoSetup.JPG)
-![First Operations with the DRV8825 Driver](../media/FirstTestWithDRV8825Driver.MOV)
