@@ -25,9 +25,11 @@ Matt and I decided to use KiCad for our schematic. For the motor drivers, we nee
 
 [DRV8825 Chip Datasheet](https://www.ti.com/lit/ds/symlink/drv8825.pdf)
 
-Implementing the information from the datasheet to our schematic:
+Implementing the information from the datasheet to our L298N schematic:
 
 ![L298N Schematic](../media/L298N_Schematic.png)
+
+Implementing the information from the datasheet to our DRV8825 schematic:
 
 ![DRV88825 Schematic](../media/DRV8825_Schematic.png)
 
