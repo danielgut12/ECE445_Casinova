@@ -27,11 +27,11 @@ Matt and I decided to use KiCad for our schematic. For the motor drivers, we nee
 
 Implementing the information from the datasheet to our L298N schematic:
 
-![L298N Schematic](../media/L298N_Schematic.png)
+![L298N Schematic](./media/L298N_Schematic.png)
 
 Implementing the information from the datasheet to our DRV8825 schematic:
 
-![DRV88825 Schematic](../media/DRV8825_Schematic.png)
+![DRV88825 Schematic](./media/DRV8825_Schematic.png)
 
 ## February 26nd, 2025
 **Objective: Order parts**
@@ -51,4 +51,4 @@ Meeting with Matt to finalize the parts that were needed for our breadboard demo
 
 Now that the motor drivers were in, I was finally able to get my hands dirty with testing. I haven't worked with drivers before so the only goal for today was to see if I can them them running with the limited supply of voltage. The batteries didn't have the voltage required and the external car battery didn't have the required current to produce motor speed. I was able to debug this with the Nema 17 stepper motor and the DRV8825 driver. You can hear the gears humming inside, but it couldn't spin.
 
-![First Operations with Nema 17 Stepper Motor](../media/Nema17StepperMotorArdiunoSetup.JPG)
+![First Operations with Nema 17 Stepper Motor](./media/Nema17StepperMotorArdiunoSetup.JPG)
