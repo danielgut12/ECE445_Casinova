@@ -28,8 +28,8 @@ Matt and I decided to use KiCad for our schematic. For the motor drivers, we nee
 Implementing the information from the datasheet to our schematic:
 
 ![L298N Schematic](../media/L298N Schematic.png)
-![DRV88825 Schematic](../media/DRV8825 Schematic.png)
 
+![DRV88825 Schematic](../media/DRV8825 Schematic.png)
 
 ## February 26nd, 2025
 **Objective: Order parts**
