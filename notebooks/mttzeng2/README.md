@@ -98,3 +98,11 @@ We also added to our schematic the "Power-In" input, which will support a 12V 6A
 
 [LDO Resource](https://www.electronics-lab.com/project/3-3v-voltage-regulator/)
 
+## **3/4/24: Working on Setting up Arduino IDE Envirnoment for ESP32-S3 Dev Kit**
+
+Notes for TOF10120:
+- Do NOT use RX and TX ports on the dev board
+    - Not sure why, but inputs dont work and i cant read data. use the other GPIO pins instead
+    - Used 18 and 8 and it worked
+- Use 3.3V or 5V either works
+- Use Right USB Port (works better)
