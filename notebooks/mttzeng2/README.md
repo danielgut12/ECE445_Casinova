@@ -106,3 +106,38 @@ Notes for TOF10120:
     - Used 18 and 8 and it worked
 - Use 3.3V or 5V either works
 - Use Right USB Port (works better)
+
+## **3/5/24: Setting up the OV2640 using the FPC-24P breakout board**
+**PINOUT**
+| Pin # | Name | Function
+| -------- | ------- | ------- |
+| 1 | NC | idk |
+| 2 | AGND | idk |
+| 3 | SDA | idk |
+| 4 | AVDD | Use 3.3V |
+| 5 | SCL | idk |
+| 6 | RESET | idk |
+| 7 | VS | idk |
+| 8 | PWON | idk |
+| 9 | HS | idk |
+| 10 | DVDD1.2 | Internally Regulated (Checked with Multimeter) no pin |
+| 11 | DOVDD2.8 | Use 3.3V |
+| 12 | D9 | idk |
+| 13 | MCLK | idk |
+| 14 | D8 | idk |
+| 15 | DGND | idk |
+| 16 | D7 | idk |
+| 17 | PCLK | idk |
+| 18 | D6 | idk |
+| 19 | D2 | idk |
+| 20 | D5 | idk |
+| 21 | D3 | idk |
+| 22 | D4 | idk |
+| 23 | D1 | idk |
+| 24 | D0 | idk |
+
+![alt text](./media/pinout_bread.png)
+
+MAKE SURE TO ENABLE PSRAM (TOOLS -> PSRAM -> QSPI) [DONT DO THIS ACTUALLY]
+psych my dev board doesn't have psram wow what an L
+
