@@ -1,5 +1,7 @@
-#define RXD2 45   // TOF10120 TX (White) → ESP32 RX
-#define TXD2 46  // TOF10120 RX (Yellow) → ESP32 TX
+#include <Arduino.h>
+
+#define RXD2 42   // TOF10120 TX (White) → ESP32 RX
+#define TXD2 41  // TOF10120 RX (Yellow) → ESP32 TX
 
 String distance = "";  // Buffer to store the full reading
 
@@ -27,3 +29,4 @@ void loop() {
         }
     }
 }
+

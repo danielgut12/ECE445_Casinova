@@ -153,7 +153,7 @@ what currently "works"
 #define RESET_GPIO_NUM    12
 #define XCLK_GPIO_NUM     21
 #define SIOD_GPIO_NUM     8
-#define SIOC_GPIO_NUM     3
+#define SIOC_GPIO_NUM     9
 
 #define Y7_GPIO_NUM       18
 #define Y6_GPIO_NUM       17
