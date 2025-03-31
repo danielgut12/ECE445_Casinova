@@ -1,0 +1,39 @@
+#include <WiFi.h>           // For Wi-Fi functions (Access Point)
+#include <WebServer.h>      // Lightweight HTTP server
+
+// Wi-Fi AP credentials
+#define WIFI_SSID "ESP32-2"
+// #define WIFI_PASSWORD "esp32pass"
+
+// Create a web server on port 80 (HTTP)
+WebServer server(80);
+
+// Placeholder for whatever data you want to serve
+String encoded = "ESP32 access point up!";
+
+
+void handleRoot() {
+    server.send(200, "text/plain", encoded);
+}
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    // Start ESP32 as Access Point
+    WiFi.softAP(WIFI_SSID);
+
+    // Log IP address
+    Serial.print("AP IP address: ");
+    Serial.println(WiFi.softAPIP());
+
+    // Route handling
+    server.on("/", handleRoot);
+    server.begin();
+    Serial.println("HTTP server started");
+}
+
+void loop() {
+    digitalWrite(LED_BUILTIN, WiFi.softAPgetStationNum() > 0); // Light if someone is connected
+    server.handleClient(); // Handle incoming HTTP requests
+}
