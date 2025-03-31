@@ -136,8 +136,42 @@ Notes for TOF10120:
 | 23 | D1 | idk |
 | 24 | D0 | idk |
 
+** CANNOT USE GPIO10 FOR OUTPUT!!! Reserved for FLASH PSRAM OPERATIONS **
+
 ![alt text](./media/pinout_bread.png)
 
 MAKE SURE TO ENABLE PSRAM (TOOLS -> PSRAM -> QSPI) [DONT DO THIS ACTUALLY]
 psych my dev board doesn't have psram wow what an L
+
+
+
+what currently "works"
+#define XCLK_PIN 21  // GPIO for XCLK (MCLK)
+
+// GPIO Pin Mapping (Use your setup)
+#define PWDN_GPIO_NUM    -1
+#define RESET_GPIO_NUM    12
+#define XCLK_GPIO_NUM     21
+#define SIOD_GPIO_NUM     8
+#define SIOC_GPIO_NUM     9
+
+#define Y7_GPIO_NUM       18
+#define Y6_GPIO_NUM       17
+#define Y5_GPIO_NUM       16
+#define Y4_GPIO_NUM       15
+#define Y3_GPIO_NUM        7
+#define Y2_GPIO_NUM        6
+#define Y1_GPIO_NUM        5
+#define Y0_GPIO_NUM        4
+#define VSYNC_GPIO_NUM    13 // CHANGE FROM 10 DUE TO PSRAM STUFF
+#define HREF_GPIO_NUM      9
+#define PCLK_GPIO_NUM     11
+
+
+
+## DO THIS IN PLATFORMIO!!! (but for the N16R8)
+Also... I'm using PlatformIO through VSCode now since it's just better and that's what the guide told me to do
+https://community.platformio.org/t/issue-in-esp32-s3-wroom-1-n8r8-psram-initialization/40915
+this is a lifesaver (wasted 5 hours on this one dumb but crucial issue)
+
 
