@@ -14,6 +14,7 @@ void handleRoot() {
 }
 // OV2640 CAMERA STUFF
 /*
+*/
 #include "esp_camera.h"
 #include "base64.h"
 #include "esp_log.h"
@@ -56,11 +57,11 @@ static camera_config_t camera_config = {
     .pin_href = CAM_PIN_HREF,
     .pin_pclk = CAM_PIN_PCLK,
     
-    .xclk_freq_hz = 12000000, 
+    .xclk_freq_hz = 16000000, // 16MHz for EDMA mode
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
     
-    .pixel_format = PIXFORMAT_RGB565,
+    .pixel_format = PIXFORMAT_GRAYSCALE,
     .frame_size = FRAMESIZE_QVGA,       // 320x240
     .jpeg_quality = 12,                 // 0 = highest, 63 = worst
     .fb_count = 2,                      // JPEG needs double buffers
@@ -71,14 +72,15 @@ static camera_config_t camera_config = {
 void process_image(int width, int height, pixformat_t format, uint8_t *buf, size_t len) {
     Serial.printf("Image captured: %dx%d, format=%d, size=%d bytes\n", width, height, format, len);
     encoded = base64::encode(buf, len);
-    // Serial.println(encoded); // Base64 encoded RGB565
+    Serial.println(encoded); // Base64 encoded RGB565
+    Serial.println("Done Printing Encoded");
 }
 
 esp_err_t camera_init() {
     if (CAM_PIN_PWDN != -1) {
         pinMode(CAM_PIN_PWDN, OUTPUT);
         digitalWrite(CAM_PIN_PWDN, LOW);
-        delay(10); // Give it time to power up
+        // delay(10); // Give it time to power up
     }
     
     delay(100); // Give time before init
@@ -97,97 +99,112 @@ esp_err_t camera_capture() {
         return ESP_FAIL;
     }
     
-    Serial.printf("Captured JPEG: %dx%d, %d bytes\n", fb->width, fb->height, fb->len);
+    Serial.printf("Captured Image: %dx%d, %d bytes\n", fb->width, fb->height, fb->len);
     process_image(fb->width, fb->height, fb->format, fb->buf, fb->len);
     esp_camera_fb_return(fb);
     return ESP_OK;
 }
 
-*/
 
 
 
 void setup() {
     Serial.begin(115200);
+
+    /*
     // digitalWrite(LED_BUILTIN, 0);
-
+    
     delay(1000); // Allow time for serial monitor
-
+    
     
     // esp_log_level_set("*", ESP_LOG_VERBOSE);
     
     // if (!psramFound()) {
-    //     Serial.println("PSRAM not found!");
-    // }
-    
-    // WIFI STUFF
-    pinMode(LED_BUILTIN, OUTPUT);
-    
-    // addAP req. two args, (SSID, PASSWORD)
-    wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
+        //     Serial.println("PSRAM not found!");
+        // }
+        
+        // WIFI STUFF
+        pinMode(LED_BUILTIN, OUTPUT);
+        
+        // addAP req. two args, (SSID, PASSWORD)
+        wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
+        
+        // Keeps trying to connect to wifi until WL_CONNECTED signal given
+        while(wifiMulti.run() != WL_CONNECTED) {
+            delay(100);
+        }
+        
+        // Serial Monitor Logging
+        Serial.println("Connected to Wifi");
+        Serial.println("Connected to Wifi");
+        Serial.print("IP address: ");
+        Serial.println(WiFi.localIP());
+        
+        
+        server.on("/", handleRoot); // Define route
+        server.begin();
+        
+        Serial.print("HTTP server started");
+        
+        */
 
-    // Keeps trying to connect to wifi until WL_CONNECTED signal given
-    while(wifiMulti.run() != WL_CONNECTED) {
-        delay(100);
+    if (camera_init() == ESP_OK) {
+        Serial.println("Camera initialized successfully");
+    } else {
+        Serial.println("Camera initialization failed");
     }
-    
-    // Serial Monitor Logging
-    Serial.println("Connected to Wifi");
-    Serial.println("Connected to Wifi");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-    
-    
-    server.on("/", handleRoot); // Define route
-    server.begin();
-    
-    Serial.print("HTTP server started");
+    Serial.printf("PSRAM: %s, size: %d bytes\n", psramFound() ? "OK" : "NOT FOUND", ESP.getPsramSize());
+    sensor_t * s = esp_camera_sensor_get();
+    if (!s) {
+        Serial.println("Failed to get sensor object");
+    }
+    // Enable grayscale
+    s->set_pixformat(s, PIXFORMAT_GRAYSCALE);
 
+    // Focus on clarity
+    s->set_brightness(s, -2);     // Lower brightness (range: -2 to +2)
+    s->set_contrast(s, 2);        // Max contrast (range: -2 to +2)
+    s->set_saturation(s, 0);      // No effect on grayscale but safe to set
 
-    // if (camera_init() == ESP_OK) {
-    //     Serial.println("Camera initialized successfully");
-    // } else {
-    //     Serial.println("Camera initialization failed");
-    // }
-    // Serial.printf("PSRAM: %s, size: %d bytes\n", psramFound() ? "OK" : "NOT FOUND", ESP.getPsramSize());
-    // sensor_t * s = esp_camera_sensor_get();
-    // if (!s) {
-    //     Serial.println("Failed to get sensor object");
-    // }
+    // Exposure
+    s->set_exposure_ctrl(s, 0);   // Manual exposure
+    s->set_aec_value(s, 150);     // Lower value = darker; try 100–300
 
-    // /*
-    // s->set_framesize(s, FRAMESIZE_QVGA);
-    // s->set_whitebal(s, 1);
-    // s->set_brightness(s, 1);
-    // s->set_contrast(s, 2);
-    // s->set_saturation(s, 1);
-    // s->set_gain_ctrl(s, 1);
-    // s->set_gainceiling(s, (gainceiling_t)6);
-    // s->set_exposure_ctrl(s, 1);
-    // s->set_denoise(s, 1);
-    // s->set_lenc(s, 1);
-    // */
+    // Gain
+    s->set_gain_ctrl(s, 1);       // Enable gain control
+    s->set_agc_gain(s, 5);        // Lower gain to reduce noise
+
+    // White balance (not needed for grayscale, but safer to turn off)
+    s->set_whitebal(s, 0);
+
+    // Sharpness (may help)
+    s->set_sharpness(s, 2);       // Try 1–2 for clearer edges (if supported)
     
-    // Serial.printf("Sensor PID: 0x%04x\n", s->id.PID);
+
+    
+    Serial.printf("Sensor PID: 0x%04x\n", s->id.PID);
 }
 
 void loop() {
+    /*
     digitalWrite(LED_BUILTIN, WiFi.status() == WL_CONNECTED);
     server.handleClient(); // Respond to HTTP requests
+    */
 
-    // static unsigned long lastCapture = 0;
-    // if (millis() - lastCapture > 500000) {  // Capture every 5 seconds
-    //     lastCapture = millis();
+    static unsigned long lastCapture = 0;
+    if (millis() - lastCapture > 500000 || lastCapture == 0) {  // Capture every 5 seconds
+        lastCapture = millis();
 
-    //     camera_fb_t * fb = esp_camera_fb_get();
-    //     if (!fb) {
-    //         Serial.println("JPEG capture failed: fb == NULL");
-    //     } else {
-    //         Serial.printf("Captured JPEG: %dx%d, %d bytes\n", fb->width, fb->height, fb->len);
-    //         // Store the image data if needed
-    //         esp_camera_fb_return(fb);
-    //     }
-    // }
+        camera_fb_t * fb = esp_camera_fb_get();
+        if (!fb) {
+            Serial.println("Frame Buffer Get Failure");
+        } else {
+            Serial.printf("Captured JPEG: %dx%d, %d bytes\n", fb->width, fb->height, fb->len);
+            // Store the image data if needed
+            camera_capture();
+            esp_camera_fb_return(fb);
+        }
+    }
 }
 
 
