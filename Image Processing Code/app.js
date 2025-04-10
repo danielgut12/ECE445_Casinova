@@ -69,6 +69,19 @@ function checkAndStart() {
 
 // start processing video feed
 function startProcessing(video, canvas, suit, rank, rankTemplates, suitTemplates) {
+
+// Constants for contour filtering
+  const SUIT_AREA_MIN = 300;
+  const SUIT_AREA_MAX = 800;
+  const SUIT_HEIGHT_MIN = 20;
+  const SUIT_HEIGHT_MAX = 32;
+
+  const RANK_AREA_MIN = 400;
+  const RANK_AREA_MAX = 1200;
+  const RANK_HEIGHT_MIN = 29;
+  const RANK_HEIGHT_MAX = 40;
+
+
   const src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
   const gray = new cv.Mat(video.height, video.width, cv.CV_8UC1);
   const binary = new cv.Mat(video.height, video.width, cv.CV_8UC1);
@@ -149,25 +162,34 @@ function startProcessing(video, canvas, suit, rank, rankTemplates, suitTemplates
         let boxArea = rect.width * rect.height;
         let boxHeight = rect.height;
     
-        // Suit
-        if (boxArea > 500 && boxArea < 1100 && boxHeight > 5 && boxHeight < 35) {
+        // Suit Detection
+        if (
+          boxArea >= SUIT_AREA_MIN && boxArea <= SUIT_AREA_MAX &&
+          boxHeight >= SUIT_HEIGHT_MIN && boxHeight <= SUIT_HEIGHT_MAX
+        ) {
           cv.drawContours(contourOutput, contours, i, new cv.Scalar(255, 0, 0), 1);
           let resized = new cv.Mat();
           cv.resize(symbolROI, resized, new cv.Size(70, 100));
           let label = matchTemplate(resized, suitTemplates);
           detectedSuit = label;
           console.log("Matched suit:", label);
+          console.log("suit height " + boxHeight);
           cv.imshow(suit, symbolROI);
           resized.delete();
-
-        // Rank
-        } else if (boxArea > 500 && boxArea < 1100 && boxHeight >= 35 && boxHeight < 45) {
+        }
+        
+        // Rank Detection
+        else if (
+          boxArea >= RANK_AREA_MIN && boxArea <= RANK_AREA_MAX &&
+          boxHeight >= RANK_HEIGHT_MIN && boxHeight <= RANK_HEIGHT_MAX
+        ) {
           cv.drawContours(contourOutput, contours, i, new cv.Scalar(0, 255, 0), 1);
           let resized = new cv.Mat();
           cv.resize(symbolROI, resized, new cv.Size(70, 126));
           let label = matchTemplate(resized, rankTemplates);
           detectedRank = label;
           console.log("Matched rank:", label);
+          console.log("rank height " + boxHeight);
           cv.imshow(rank, symbolROI);
           resized.delete();
         }
