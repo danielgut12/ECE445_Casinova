@@ -7,31 +7,34 @@
 
 void setup() {
   Serial.begin(115200);
-  initStepper();
-  initCamera();
-  initTOFSensor();
-  initMotors();
-  initInputs();
+  // initStepper();
+  // initTOFSensor();
+  // initMotors();
+  // initInputs();
+
+  init_camera();
 }
 
 void loop() {
-  int playerIndex;
-  if (checkHitInput(playerIndex)) {
-    handleHit(playerIndex);
-  }
+  capture_and_send();
+  delay(500000);
+  // int playerIndex;
+  // if (checkHitInput(playerIndex)) {
+  //   handleHit(playerIndex);
+  // }
   // Add check for stand, new round, etc.
 }
 
-void handleHit(int playerIndex) {
-  rotateToPlayer(playerIndex);
+// void handleHit(int playerIndex) {
+//   rotateToPlayer(playerIndex);
 
-  Card dealtCard;
-  captureAndDetectCard(dealtCard);
+//   Card dealtCard;
+//   captureAndDetectCard(dealtCard);
 
-  pushCardToEjectionZone();
+//   pushCardToEjectionZone();
 
-  float distance = getPlayerDistance();
-  ejectCardToDistance(distance);
+//   float distance = getPlayerDistance();
+//   ejectCardToDistance(distance);
 
-  storeDealtCard(playerIndex, dealtCard); // Optional for tracking
-} 
+//   storeDealtCard(playerIndex, dealtCard); // Optional for tracking
+// } 
