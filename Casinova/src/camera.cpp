@@ -43,7 +43,8 @@ static camera_config_t camera_config = {
     .pixel_format = PIXFORMAT_GRAYSCALE,
     .frame_size = FRAMESIZE_QVGA,
     .jpeg_quality = 12,
-    .fb_count = 2,
+    .fb_count = 4,
+    .fb_location = CAMERA_FB_IN_PSRAM,
     .grab_mode = CAMERA_GRAB_WHEN_EMPTY
 };
 
@@ -69,14 +70,14 @@ esp_err_t init_camera() {
         return ESP_FAIL;
     }
 
-    s->set_pixformat(s, PIXFORMAT_GRAYSCALE);
-    s->set_brightness(s, -2);
+    // s->set_pixformat(s, PIXFORMAT_GRAYSCALE);
+    s->set_brightness(s, 2);
     s->set_contrast(s, 2);
     s->set_saturation(s, 0);
     s->set_exposure_ctrl(s, 0);
     s->set_aec_value(s, 150);
     s->set_gain_ctrl(s, 1);
-    s->set_agc_gain(s, 5);
+    s->set_agc_gain(s, 10);
     s->set_whitebal(s, 0);
     s->set_sharpness(s, 2);
 
@@ -87,7 +88,7 @@ esp_err_t init_camera() {
 esp_err_t capture_and_send() {
     camera_fb_t * fb = esp_camera_fb_get();
     if (!fb) {
-        Serial.println("Camera Capture Failed: framebuffer is NULL");
+        Serial.println("empty framebuffer");
         return ESP_FAIL;
     }
 

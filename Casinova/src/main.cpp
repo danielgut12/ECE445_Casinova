@@ -11,13 +11,19 @@ void setup() {
   // initTOFSensor();
   // initMotors();
   // initInputs();
+  initTOFSensor();
+  // init_camera();
 
-  init_camera();
+  pinMode(42, OUTPUT);
+  digitalWrite(42, HIGH);
+  delay(100);
 }
 
 void loop() {
-  capture_and_send();
-  delay(500000);
+  // capture_and_send();
+  float dist_mm = getPlayerDistance();
+  if(dist_mm > 0) Serial.println(dist_mm);
+    // delay(1000);
   // int playerIndex;
   // if (checkHitInput(playerIndex)) {
   //   handleHit(playerIndex);
