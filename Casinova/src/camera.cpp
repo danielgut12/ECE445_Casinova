@@ -43,7 +43,7 @@ static camera_config_t camera_config = {
     .pixel_format = PIXFORMAT_GRAYSCALE,
     .frame_size = FRAMESIZE_QVGA,
     .jpeg_quality = 12,
-    .fb_count = 4,
+    .fb_count = 2,
     .fb_location = CAMERA_FB_IN_PSRAM,
     .grab_mode = CAMERA_GRAB_WHEN_EMPTY
 };
@@ -99,3 +99,25 @@ esp_err_t capture_and_send() {
     esp_camera_fb_return(fb);
     return ESP_OK;
 }
+
+bool getJpegFrame(uint8_t** jpeg_buf, size_t* jpeg_len) {
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (!fb) return false;
+
+    bool success = false;
+
+    if (fb->format == PIXFORMAT_JPEG) {
+        *jpeg_buf = (uint8_t*)malloc(fb->len);
+        if (*jpeg_buf) {
+            memcpy(*jpeg_buf, fb->buf, fb->len);
+            *jpeg_len = fb->len;
+            success = true;
+        }
+    } else {
+        success = frame2jpg(fb, 80, jpeg_buf, jpeg_len);
+    }
+
+    esp_camera_fb_return(fb);
+    return success && (*jpeg_buf != nullptr) && (*jpeg_len > 0);
+}
+

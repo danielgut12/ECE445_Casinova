@@ -4,6 +4,10 @@
 #include "tof_sensor.h"
 #include "input.h"
 #include "camera.h"
+#include "my_wifi.h"
+#include "mjpeg_streamer.h"
+
+MJPEGStreamer *streamer;
 
 void setup() {
   Serial.begin(115200);
@@ -11,9 +15,16 @@ void setup() {
   // initTOFSensor();
   // initMotors();
   // initInputs();
-  initTOFSensor();
+  // initTOFSensor();
   // init_camera();
+  // initWifi();
 
+  // static MJPEGStreamer mjpeg(server);
+  // streamer = &mjpeg;
+  // streamer->begin();
+
+
+  // visual check
   pinMode(42, OUTPUT);
   digitalWrite(42, HIGH);
   delay(100);
@@ -21,9 +32,9 @@ void setup() {
 
 void loop() {
   // capture_and_send();
-  float dist_mm = getPlayerDistance();
-  if(dist_mm > 0) Serial.println(dist_mm);
-    // delay(1000);
+  // delay(100000);
+  // float dist_mm = getPlayerDistance();
+  // if(dist_mm > 0) Serial.println(dist_mm);
   // int playerIndex;
   // if (checkHitInput(playerIndex)) {
   //   handleHit(playerIndex);

@@ -7,7 +7,6 @@
 // Initializes camera and sets sensor options
 esp_err_t init_camera();
 
-// Captures a grayscale image, base64 encodes it, and prints to Serial
-esp_err_t capture_and_send();
+bool getJpegFrame(uint8_t** jpeg_buf, size_t* jpeg_len);
 
 #endif
