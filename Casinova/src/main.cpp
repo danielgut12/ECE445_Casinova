@@ -7,7 +7,7 @@
 #include "my_wifi.h"
 #include "mjpeg_streamer.h"
 
-MJPEGStreamer *streamer;
+// MJPEGStreamer *streamer;
 
 void setup() {
   Serial.begin(115200);
@@ -15,9 +15,9 @@ void setup() {
   // initTOFSensor();
   // initMotors();
   // initInputs();
-  // initTOFSensor();
+  initTOFSensor();
   // init_camera();
-  // initWifi();
+  initWifi();
 
   // static MJPEGStreamer mjpeg(server);
   // streamer = &mjpeg;
@@ -31,6 +31,7 @@ void setup() {
 }
 
 void loop() {
+
   // capture_and_send();
   // delay(100000);
   // float dist_mm = getPlayerDistance();
