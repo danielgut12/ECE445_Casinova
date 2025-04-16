@@ -8,5 +8,6 @@
 esp_err_t init_camera();
 
 bool getJpegFrame(uint8_t** jpeg_buf, size_t* jpeg_len);
+esp_err_t capture_and_send();
 
 #endif

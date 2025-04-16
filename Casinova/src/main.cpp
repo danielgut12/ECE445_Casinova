@@ -25,8 +25,8 @@ void setup() {
   // initMotors();
   // initInputs();
   // initTOFSensor();
-  // init_camera();
-  // initWifi();
+  init_camera();
+  initWifi();
 
   // static MJPEGStreamer mjpeg(server);
   // streamer = &mjpeg;
@@ -41,34 +41,35 @@ void setup() {
 
 void loop() {
 
+  capture_and_send();
+  delay(100000);
+    // // Set motor direction clockwise
+    // digitalWrite(dirPin, HIGH);
   
-    // Set motor direction clockwise
-    digitalWrite(dirPin, HIGH);
-  
-    // Spin motor slowly
-    for (int i = 0; i < 8; i++) {
-      for(int x = 0; x < stepsPerRevolution / 8; x++)
-      {
-        digitalWrite(stepPin, HIGH);
-        delayMicroseconds(2000);
-        digitalWrite(stepPin, LOW);
-        delayMicroseconds(2000);
-      }
-      delay(1000); // Wait a second
-    }
+    // // Spin motor slowly
+    // for (int i = 0; i < 8; i++) {
+    //   for(int x = 0; x < stepsPerRevolution / 8; x++)
+    //   {
+    //     digitalWrite(stepPin, HIGH);
+    //     delayMicroseconds(2000);
+    //     digitalWrite(stepPin, LOW);
+    //     delayMicroseconds(2000);
+    //   }
+    //   delay(1000); // Wait a second
+    // }
     
-    // Set motor direction counterclockwise
-    digitalWrite(dirPin, LOW);
+    // // Set motor direction counterclockwise
+    // digitalWrite(dirPin, LOW);
   
-    // Spin motor quickly
-    for(int x = 0; x < stepsPerRevolution; x++)
-    {
-      digitalWrite(stepPin, HIGH);
-      delayMicroseconds(2000);
-      digitalWrite(stepPin, LOW);
-      delayMicroseconds(2000);
-    }
-    delay(1000); // Wait a second
+    // // Spin motor quickly
+    // for(int x = 0; x < stepsPerRevolution; x++)
+    // {
+    //   digitalWrite(stepPin, HIGH);
+    //   delayMicroseconds(2000);
+    //   digitalWrite(stepPin, LOW);
+    //   delayMicroseconds(2000);
+    // }
+    // delay(1000); // Wait a second
   
 
 
