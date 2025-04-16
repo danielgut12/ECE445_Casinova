@@ -22,5 +22,5 @@ arr = np.frombuffer(raw, dtype=np.uint8).reshape((h, w))
 img = Image.fromarray(arr, 'L')  # 'L' = 8-bit pixels, black and white
 
 # STEP 6: Save image
-img.save("frame_qvga_grayscale.png")
-print("Saved as frame_qvga_grayscale.png")
+img.save("demo.png")
+# print("Saved as frame_qvga_grayscale.png")
