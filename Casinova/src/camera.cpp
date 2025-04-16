@@ -42,10 +42,10 @@ static camera_config_t camera_config = {
     .ledc_channel = LEDC_CHANNEL_0,
     .pixel_format = PIXFORMAT_GRAYSCALE,
     .frame_size = FRAMESIZE_QVGA,
-    .jpeg_quality = 12,
-    .fb_count = 2,
+    // .jpeg_quality = 12,
+    .fb_count = 1,
     .fb_location = CAMERA_FB_IN_PSRAM,
-    .grab_mode = CAMERA_GRAB_WHEN_EMPTY
+    .grab_mode = CAMERA_GRAB_LATEST // don't use queue, but grab most recent photo.
 };
 
 esp_err_t init_camera() {
@@ -71,15 +71,19 @@ esp_err_t init_camera() {
     }
 
     // s->set_pixformat(s, PIXFORMAT_GRAYSCALE);
-    s->set_brightness(s, 2);
-    s->set_contrast(s, 2);
-    s->set_saturation(s, 0);
-    s->set_exposure_ctrl(s, 0);
-    s->set_aec_value(s, 150);
-    s->set_gain_ctrl(s, 1);
-    s->set_agc_gain(s, 10);
-    s->set_whitebal(s, 0);
-    s->set_sharpness(s, 2);
+    s->set_brightness(s, 0);     // No brightness boost
+    s->set_contrast(s, 0);       // Remove artificial contrast
+    s->set_saturation(s, 0);     // Not needed
+    s->set_gainceiling(s, GAINCEILING_2X);  // Lower noise
+    
+    s->set_exposure_ctrl(s, 1);  // Auto exposure ON
+    s->set_aec2(s, 1);           // Better AE algorithm
+    s->set_aec_value(s, 400);    // Optional manual control (if needed)
+    
+    s->set_gain_ctrl(s, 1);      // Auto gain ON
+    s->set_agc_gain(s, 0);       // Let it auto-adjust
+    s->set_whitebal(s, 0);       // No white balance in grayscale
+    s->set_sharpness(s, 0);      // Remove artificial sharpening
 
     Serial.printf("Sensor PID: 0x%04x\n", s->id.PID);
     return ESP_OK;

@@ -12,6 +12,7 @@ AsyncWebServer server(80);
 void initWifi() {
     WiFi.mode(WIFI_AP);
     WiFi.softAP("Casinova", "");
+
     WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
         Serial.println("Device connected");
     }, ARDUINO_EVENT_WIFI_AP_STACONNECTED);
@@ -41,31 +42,39 @@ void initWifi() {
     });
     
 
-    // Optional capture test route
-    server.on("/capture", HTTP_GET, [](AsyncWebServerRequest *request){
-        uint8_t* jpeg_buf = nullptr;
-        size_t jpeg_len = 0;
-    
-        if (!getJpegFrame(&jpeg_buf, &jpeg_len)) {
-            request->send(500, "text/plain", "Failed to capture or convert to JPEG");
-            return;
-        }
-    
-        AsyncWebServerResponse *response = request->beginResponse("image/jpeg", jpeg_len,
-            [jpeg_buf, jpeg_len](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
-                size_t to_copy = (index + maxLen > jpeg_len) ? (jpeg_len - index) : maxLen;
-                memcpy(buffer, jpeg_buf + index, to_copy);
-    
-                if (index + to_copy == jpeg_len) {
-                    free(jpeg_buf);  // free after last chunk is sent
-                }
-    
-                return to_copy;
-            });
-    
-        response->addHeader("Cache-Control", "no-cache");
-        request->send(response);
-    });
+server.on("/capture", HTTP_GET, [](AsyncWebServerRequest *request){
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (!fb) {
+        request->send(500, "text/plain", "Camera capture failed");
+        return;
+    }
+
+    uint8_t* jpeg_buf = nullptr;
+    size_t jpeg_len = 0;
+
+    if (!frame2jpg(fb, 80, &jpeg_buf, &jpeg_len)) {
+        esp_camera_fb_return(fb);
+        request->send(500, "text/plain", "JPEG conversion failed");
+        return;
+    }
+
+    esp_camera_fb_return(fb);
+
+    AsyncWebServerResponse *response = request->beginResponse("image/jpeg", jpeg_len,
+        [jpeg_buf, jpeg_len](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {
+            size_t to_copy = (index + maxLen > jpeg_len) ? (jpeg_len - index) : maxLen;
+            memcpy(buffer, jpeg_buf + index, to_copy);
+
+            if (index + to_copy == jpeg_len) {
+                free(jpeg_buf);  // Free after last chunk
+            }
+
+            return to_copy;
+        });
+
+    response->addHeader("Cache-Control", "no-cache");
+    request->send(response);
+});
 
     server.begin();
 }

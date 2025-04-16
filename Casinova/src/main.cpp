@@ -41,8 +41,8 @@ void setup() {
 
 void loop() {
 
-  capture_and_send();
-  delay(100000);
+  // capture_and_send();
+  // delay(100000);
     // // Set motor direction clockwise
     // digitalWrite(dirPin, HIGH);
   
