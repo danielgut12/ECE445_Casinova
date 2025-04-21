@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TOF Distance</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Casinova Controller</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <h2>Distance:</h2>
-    <div id="dist">--</div>
-    <script src="app.js"></script>
+    <h1>Casinova Control Panel</h1>
+
+    <div class="section">
+        <h2>Card Capture</h2>
+        <button onclick="capture()">Capture</button><br><br>
+        <img id="snapshot" width="320" height="240"/>
+    </div>
+
+    <div class="section">
+        <h2>Ejection Motor</h2>
+        <input id="distanceInput" type="number" placeholder="Distance (mm)" value="750" />
+        <button onclick="eject()">Eject</button>
+    </div>
+
+    <script>
+        function capture() {
+            const img = document.getElementById('snapshot');
+            img.src = '/capture?t=' + new Date().getTime(); // prevent caching
+        }
+
+        function eject() {
+            const dist = document.getElementById('distanceInput').value;
+            fetch('/eject?distance=' + dist)
+                .then(response => response.text())
+                .then(msg => alert(msg));
+        }
+    </script>
 </body>
 </html>

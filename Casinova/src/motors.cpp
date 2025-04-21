@@ -75,17 +75,17 @@ void runEjection(int distance_mm) {
     // // Map to PWM range (adjust as needed)
     // int motorPower = map(distance_mm, 0, 2000, 50, 200);  // out of 255
 
-    // Serial.printf("Ejection motor: distance=%dmm, speed=%d\n", distance_mm, motorPower);
-
+    
     // analogWrite(ejectEn, motorPower);
-
-
+    
+    // Maps 0mm to 50 power and 2000mm to 255 power
     int motorPower = map(constrain(distance_mm, 0, 2000), 0, 2000, 50, 255);
     int duration_ms = 1000; // run for 1s while testing
-
+    
     Serial.printf("Ejection (LED) at power %d\n", motorPower);
     analogWrite(ejectEn, motorPower);
     delay(duration_ms);
     analogWrite(ejectEn, 0);
+    Serial.printf("Ejection motor: distance=%dmm, speed=%d\n", distance_mm, motorPower);
 }
 
