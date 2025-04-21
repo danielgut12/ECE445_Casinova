@@ -3,6 +3,7 @@
 <head>
     <title>Casinova Controller</title>
     <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
 </head>
 <body>
     <h1>Casinova Control Panel</h1>
@@ -19,18 +20,10 @@
         <button onclick="eject()">Eject</button>
     </div>
 
-    <script>
-        function capture() {
-            const img = document.getElementById('snapshot');
-            img.src = '/capture?t=' + new Date().getTime(); // prevent caching
-        }
-
-        function eject() {
-            const dist = document.getElementById('distanceInput').value;
-            fetch('/eject?distance=' + dist)
-                .then(response => response.text())
-                .then(msg => alert(msg));
-        }
-    </script>
+    <div class="section">
+        <h2>Swivel Motor</h2>
+        <input id="angleInput" type="number" placeholder="Degrees" value="90" />
+        <button onclick="rotate()">Rotate</button>
+    </div>
 </body>
 </html>

@@ -12,9 +12,9 @@ int currentPosition = 0;
 
 
 // Ejection Motor
-#define ejectEn  42  // Replace with your actual enable pin
-#define ejectIn1 38
-#define ejectIn2 39
+#define ejectPin    42
+#define swivelPin   43
+#define queuePin    44
 
 
 void setupSwivel() {
@@ -52,20 +52,31 @@ void rotateToPlayer(int playerIndex, int totalPlayers) {
     currentPosition = (currentPosition + stepDelta + TOTAL_STEPS) % TOTAL_STEPS;
 }
 
+void rotateByDegrees(float degrees) {
+    int steps = (int)((degrees / 360.0) * TOTAL_STEPS);
+    if (steps == 0) return;
+
+    int stepDir = (steps >= 0) ? HIGH : LOW;
+    digitalWrite(dirPin, stepDir);
+
+    for (int i = 0; i < abs(steps); i++) {
+        digitalWrite(stepPin, HIGH);
+        delayMicroseconds(1000);  // Tune as needed
+        digitalWrite(stepPin, LOW);
+        delayMicroseconds(1000);
+    }
+
+    // Update current position with wrap-around
+    currentPosition = (currentPosition + steps + TOTAL_STEPS) % TOTAL_STEPS;
+}
+
+
 
 
 
 void setupEjection() {
-    // pinMode(ejectEn, OUTPUT);
-    // pinMode(ejectIn1, OUTPUT);
-    // pinMode(ejectIn2, OUTPUT);
-
-    // digitalWrite(ejectIn1, HIGH);  // forward direction
-    // digitalWrite(ejectIn2, LOW);
-    // analogWrite(ejectEn, 0);       // off initially
-
-    pinMode(ejectEn, OUTPUT);
-    digitalWrite(ejectEn, LOW);
+    pinMode(ejectPin, OUTPUT);
+    digitalWrite(ejectPin, LOW);
 }
 
 void runEjection(int distance_mm) {
@@ -83,9 +94,9 @@ void runEjection(int distance_mm) {
     int duration_ms = 1000; // run for 1s while testing
     
     Serial.printf("Ejection (LED) at power %d\n", motorPower);
-    analogWrite(ejectEn, motorPower);
+    analogWrite(ejectPin, motorPower);
     delay(duration_ms);
-    analogWrite(ejectEn, 0);
+    analogWrite(ejectPin, 0);
     Serial.printf("Ejection motor: distance=%dmm, speed=%d\n", distance_mm, motorPower);
 }
 
