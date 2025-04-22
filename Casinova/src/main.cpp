@@ -6,6 +6,9 @@
 #include "camera.h"
 #include "my_wifi.h"
 #include "mjpeg_streamer.h"
+#include "structs.h"
+#include "deck.h"
+#include "game.h"
 
 // MJPEGStreamer *streamer;
 
@@ -25,8 +28,11 @@ void setup() {
   // initMotors();
   // initInputs();
   // initTOFSensor();
-  init_camera();
-  initWifi();
+  // init_camera(); // TURN BACK ON FOR CAMERA
+  initWifi(); // TURN BACK ON FOR WIFI
+
+  initMockDeck();
+
 
   // static MJPEGStreamer mjpeg(server);
   // streamer = &mjpeg;
@@ -40,6 +46,26 @@ void setup() {
 }
 
 void loop() {
+
+  static bool ran = false;
+
+  if (!ran) {
+    // Fake player setup
+    Player p1, p2;
+    p1.id = "player1";
+    p2.id = "player2";
+    players["player1"] = p1;
+    players["player2"] = p2;
+    playerOrder.push_back("player1");
+    playerOrder.push_back("player2");
+
+    // Run test
+    dealHoleCards();
+
+    ran = true;
+  }
+
+  delay(1000);
 
   // capture_and_send();
   // delay(100000);

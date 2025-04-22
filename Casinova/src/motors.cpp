@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "motors.h"
+#include "tof_sensor.h"
 
 // Swivel Motor
 #define stepPin 1
@@ -70,10 +71,6 @@ void rotateByDegrees(float degrees) {
     currentPosition = (currentPosition + steps + TOTAL_STEPS) % TOTAL_STEPS;
 }
 
-
-
-
-
 void setupEjection() {
     pinMode(ejectPin, OUTPUT);
     digitalWrite(ejectPin, LOW);
@@ -100,3 +97,14 @@ void runEjection(int distance_mm) {
     Serial.printf("Ejection motor: distance=%dmm, speed=%d\n", distance_mm, motorPower);
 }
 
+
+void pushCardsWithDistance() {
+    int distance = getPlayerDistance();
+    runEjection(distance);
+}
+
+
+// Rotates to board location (unknown atm does nothing)
+void rotateToBoard() {
+    return;
+}

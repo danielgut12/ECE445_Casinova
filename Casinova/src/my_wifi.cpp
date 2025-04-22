@@ -1,8 +1,11 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 #include <LittleFS.h>
 #include "camera.h"
 #include "motors.h"
+#include "game.h"
+#include "structs.h"
 
 AsyncWebServer server(80);
 
@@ -96,7 +99,43 @@ void initWifi() {
             request->send(400, "text/plain", "Missing 'degrees' parameter.");
         }
     });
+
+    server.on("/join", HTTP_GET, [](AsyncWebServerRequest *request){
+        String id = "player" + String(nextPlayerIndex++);
+        
+        if (players.count(id) == 0) {
+            Player p;
+            p.id = id;
+            players[id] = p;
+            playerOrder.push_back(id);
+            Serial.println("New player joined: " + id);
+        }
     
+        request->send(200, "text/plain", id);
+    });
+    
+    
+    // Action for Poker Route
+    server.on("/action", HTTP_POST, [](AsyncWebServerRequest *request){
+        Serial.println("POST /action triggered");
+        if (request->hasParam("plain", true)) {
+            String body = request->getParam("plain", true)->value();
+            StaticJsonDocument<200> doc;
+            DeserializationError error = deserializeJson(doc, body);
+    
+            if (!error) {
+                String id = doc["id"];
+                String action = doc["action"];
+                onPlayerAction(id, action);
+                request->send(200, "text/plain", "Action received");
+            } else {
+                request->send(400, "text/plain", "Invalid JSON");
+            }
+        } else {
+            request->send(400, "text/plain", "No body");
+        }
+    });
+
 
     server.begin();
 }

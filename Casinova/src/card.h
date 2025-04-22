@@ -1,6 +1,8 @@
 #ifndef CARD_H
 #define CARD_H
 
+#include <Arduino.h>  // ← Required for String
+
 enum Suit { CLUBS, SPADES, HEARTS, DIAMONDS };
 enum Rank {
   RANK_2 = 2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7,
@@ -14,7 +16,7 @@ struct Card {
 
 Rank charToRank(char c);
 Suit charToSuit(char c);
-void captureAndDetectCard(Card &card);
-void storeDealtCard(int playerIndex, const Card& card);
+Card stringToCard(const String& str);
+String cardToString(const Card& card);
 
 #endif

@@ -28,3 +28,40 @@ Suit charToSuit(char c) {
     default:  return CLUBS;
   }
 }
+
+Card stringToCard(const String& str) {
+  if (str.length() < 2) {
+    return Card{RANK_2, CLUBS}; // default fallback
+  }
+
+  char rankChar = str.charAt(0);
+  char suitChar = str.charAt(1);
+  return Card{charToRank(rankChar), charToSuit(suitChar)};
+}
+
+
+
+String rankToChar(Rank rank) {
+  switch (rank) {
+    case RANK_T: return "T";
+    case RANK_J: return "J";
+    case RANK_Q: return "Q";
+    case RANK_K: return "K";
+    case RANK_A: return "A";
+    default: return String((int)rank); // 2–9
+  }
+}
+
+String suitToChar(Suit suit) {
+  switch (suit) {
+    case CLUBS: return "C";
+    case SPADES: return "S";
+    case HEARTS: return "H";
+    case DIAMONDS: return "D";
+    default: return "?";
+  }
+}
+
+String cardToString(const Card& card) {
+  return rankToChar(card.rank) + suitToChar(card.suit);
+}
