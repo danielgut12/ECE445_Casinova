@@ -17,6 +17,7 @@ void nextPhase() {
             break;
         case FLOP:
             dealCommunityCards(3);
+
             currentPhase = TURN;
             break;
         case TURN:
@@ -129,10 +130,10 @@ void dealHoleCards() {
 
 void dealCommunityCards(int count) {
     for (int i = 0; i < count; ++i) {
-        rotateToBoard();
-        pushCardsWithDistance();
+        // rotateToBoard();
+        // pushCardsWithDistance();
         
-        Card card;
+        Card card = drawCard();
         // captureAndDetectCard(card);
         communityCards.push_back(card);
     }

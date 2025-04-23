@@ -28,10 +28,10 @@ void setup() {
   // initMotors();
   // initInputs();
   // initTOFSensor();
-  // init_camera(); // TURN BACK ON FOR CAMERA
+  init_camera(); // TURN BACK ON FOR CAMERA
   initWifi(); // TURN BACK ON FOR WIFI
 
-  initMockDeck();
+  initMockDeck(); // Test deck without card detection
 
 
   // static MJPEGStreamer mjpeg(server);

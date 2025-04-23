@@ -25,5 +25,50 @@
         <input id="angleInput" type="number" placeholder="Degrees" value="90" />
         <button onclick="rotate()">Rotate</button>
     </div>
+    <div id="game-controls">
+        <h2>Game Control</h2>
+        <button onclick="advanceGame()">Next Phase</button>
+        <p id="phase-status">Waiting for players...</p>
+      </div>
+      
+      <script>
+        function advanceGame() {
+          fetch('/nextPhase')
+            .then(res => res.text())
+            .then(msg => {
+              document.getElementById('phase-status').innerText = msg;
+            })
+            .catch(err => {
+              console.error('Failed to advance phase:', err);
+              alert("Error advancing phase.");
+            });
+        }
+      </script>
+
+    <div id="community">
+        <h2>Community Cards</h2>
+        <div id="cards"></div>
+    </div>
+
+    <script>
+        function fetchGamestate() {
+          fetch('/gamestate')
+            .then(res => res.json())
+            .then(data => {
+              const cardsDiv = document.getElementById('cards');
+              cardsDiv.innerHTML = "";  // clear previous cards
+              data.community.forEach(card => {
+                const span = document.createElement("span");
+                span.textContent = card + " ";
+                span.style.marginRight = "10px";
+                cardsDiv.appendChild(span);
+              });
+            });
+        }
+        
+        // Poll every 2 seconds
+        setInterval(fetchGamestate, 2000);
+        </script>
+      
 </body>
 </html>

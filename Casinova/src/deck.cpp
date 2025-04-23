@@ -27,3 +27,10 @@ Card drawCard() {
     mockDeck.pop_back();
     return card;
 }
+
+void printRemainingDeck() {
+    Serial.println("Remaining cards in deck:");
+    for (Card c : mockDeck) {
+        Serial.println(cardToString(c));
+    }
+}

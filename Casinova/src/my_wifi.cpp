@@ -10,19 +10,20 @@
 AsyncWebServer server(80);
 
 void initWifi() {
-    WiFi.mode(WIFI_AP_STA);
+    // WiFi.mode(WIFI_AP_STA);     // STA (router mode)
+    WiFi.mode(WIFI_AP);
 
-    // STA (router mode)
-    WiFi.begin("2.4 410GRN-U313", "CXNK001CBEAB");
-    Serial.print("Connecting to WiFi");
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
 
-    Serial.println("\nConnected to router!");
-    Serial.print("Local IP: ");
-    Serial.println(WiFi.localIP());
+    // WiFi.begin("2.4 410GRN-U313", "CXNK001CBEAB");
+    // Serial.print("Connecting to WiFi");
+    // while (WiFi.status() != WL_CONNECTED) {
+    //     delay(500);
+    //     Serial.print(".");
+    // }
+
+    // Serial.println("\nConnected to router!");
+    // Serial.print("Local IP: ");
+    // Serial.println(WiFi.localIP());
 
     // AP (access point)
     WiFi.softAP("Casinova", "");
@@ -135,6 +136,27 @@ void initWifi() {
             request->send(400, "text/plain", "No body");
         }
     });
+
+    // TESTING: increment phase
+    server.on("/nextPhase", HTTP_GET, [](AsyncWebServerRequest *request){
+        nextPhase();
+        request->send(200, "text/plain", "Phase advanced to: " + String(currentPhase));
+    });
+
+    server.on("/gamestate", HTTP_GET, [](AsyncWebServerRequest *request){
+        StaticJsonDocument<512> doc;
+        doc["phase"] = currentPhase;
+    
+        JsonArray cardsArray = doc.createNestedArray("community");
+        for (const Card& c : communityCards) {
+            cardsArray.add(cardToString(c));
+        }
+        
+        String json;
+        serializeJson(doc, json);
+        request->send(200, "application/json", json);
+    });
+    
 
 
     server.begin();
