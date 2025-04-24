@@ -1,0 +1,4 @@
+In Powershell
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+    cd "C:\path\to\emsdk"
+    .\emsdk_env.ps1
