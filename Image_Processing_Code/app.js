@@ -1,3 +1,4 @@
+function onOpenCvReady() {
 cv['onRuntimeInitialized'] = () => {
   console.log('OpenCV is ready');
 
@@ -159,3 +160,4 @@ cv['onRuntimeInitialized'] = () => {
     hierarchy.delete();
   });
 };
+}

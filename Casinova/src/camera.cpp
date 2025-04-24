@@ -37,15 +37,15 @@ static camera_config_t camera_config = {
     .pin_vsync = CAM_PIN_VSYNC,
     .pin_href = CAM_PIN_HREF,
     .pin_pclk = CAM_PIN_PCLK,
-    .xclk_freq_hz = 24000000,
+    .xclk_freq_hz = 20000000,
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
-    .pixel_format = PIXFORMAT_GRAYSCALE,
+    .pixel_format = PIXFORMAT_RGB565,
     .frame_size = FRAMESIZE_QVGA,
     // .jpeg_quality = 12,
     .fb_count = 1,
     .fb_location = CAMERA_FB_IN_PSRAM,
-    .grab_mode = CAMERA_GRAB_LATEST // don't use queue, but grab most recent photo.
+    .grab_mode = CAMERA_GRAB_WHEN_EMPTY // don't use queue, but grab most recent photo.
 };
 
 esp_err_t init_camera() {
@@ -65,25 +65,34 @@ esp_err_t init_camera() {
     Serial.printf("PSRAM: %s, size: %d bytes\n", psramFound() ? "OK" : "NOT FOUND", ESP.getPsramSize());
 
     sensor_t * s = esp_camera_sensor_get();
+
     if (!s) {
         Serial.println("Failed to get sensor object");
         return ESP_FAIL;
     }
 
-    // s->set_pixformat(s, PIXFORMAT_GRAYSCALE);
-    s->set_brightness(s, 0);     // No brightness boost
-    s->set_contrast(s, 0);       // Remove artificial contrast
-    s->set_saturation(s, 0);     // Not needed
-    s->set_gainceiling(s, GAINCEILING_2X);  // Lower noise
+    // Manual image tuning
+    s->set_brightness(s, -2);       // Slight darkening
+    s->set_contrast(s, 1);          // Boost edges
+    s->set_saturation(s, 0);        // Not used in grayscale
+    s->set_sharpness(s, 0);         // Turn off artificial edge boost
+    s->set_gainceiling(s, GAINCEILING_2X);  // Noise ceiling
     
-    s->set_exposure_ctrl(s, 1);  // Auto exposure ON
-    s->set_aec2(s, 1);           // Better AE algorithm
-    s->set_aec_value(s, 400);    // Optional manual control (if needed)
+    // Disable auto gain & exposure
+    s->set_exposure_ctrl(s, 0);     // Manual exposure
+    s->set_aec2(s, 0);              // No effect if exposure_ctrl is off
+    s->set_gain_ctrl(s, 0);         // Manual gain
     
-    s->set_gain_ctrl(s, 1);      // Auto gain ON
-    s->set_agc_gain(s, 0);       // Let it auto-adjust
-    s->set_whitebal(s, 0);       // No white balance in grayscale
-    s->set_sharpness(s, 0);      // Remove artificial sharpening
+    // Manual gain/exposure (tune as needed)
+    s->set_agc_gain(s, 1);          // Try 6–12
+    s->set_aec_value(s, 15);       // Try 200–400
+    
+    // Optional lens correction & flip
+    s->set_whitebal(s, 0);          // Not needed for grayscale
+    s->set_lenc(s, 1);              // Lens correction on
+    s->set_hmirror(s, 1);           // Flip for upright image
+    s->set_vflip(s, 1);
+    
 
     Serial.printf("Sensor PID: 0x%04x\n", s->id.PID);
     return ESP_OK;
@@ -105,6 +114,14 @@ esp_err_t capture_and_send() {
 }
 
 bool getJpegFrame(uint8_t** jpeg_buf, size_t* jpeg_len) {
+
+        // flush frames
+    for (int i = 0; i < 3; i++) {
+        camera_fb_t * temp = esp_camera_fb_get();
+        if (temp) esp_camera_fb_return(temp);
+        delay(30);  // let the sensor settle between frames
+    }
+
     camera_fb_t *fb = esp_camera_fb_get();
     if (!fb) return false;
 
