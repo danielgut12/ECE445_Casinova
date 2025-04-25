@@ -85,7 +85,7 @@ esp_err_t init_camera() {
     
     // Manual gain/exposure (tune as needed)
     s->set_agc_gain(s, 1);          // Try 6–12
-    s->set_aec_value(s, 15);       // Try 200–400
+    s->set_aec_value(s, 30);       // Try 200–400
     
     // Optional lens correction & flip
     s->set_whitebal(s, 0);          // Not needed for grayscale

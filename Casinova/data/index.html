@@ -7,96 +7,30 @@
 </head>
 <body>
   <p id="player-id"></p>
-
-    <h1>Casinova Control Panel</h1>
-
-    <div class="section">
-        <h2>Card Capture</h2>
-        <button onclick="capture()">Capture</button><br><br>
-        <img id="snapshot" width="320" height="240"/>
-    </div>
-
-    <div class="section">
-        <h2>Ejection Motor</h2>
-        <input id="distanceInput" type="number" placeholder="Distance (mm)" value="750" />
-        <button onclick="eject()">Eject</button>
-    </div>
-
-    <div class="section">
-        <h2>Swivel Motor</h2>
-        <input id="angleInput" type="number" placeholder="Degrees" value="90" />
-        <button onclick="rotate()">Rotate</button>
-    </div>
+  <div class="section">
+    <button id="readyBtn">I'm Ready</button>
+  </div>
+  <div id="player-list" class="section">
+    <h2>Players</h2>
+    <ul id="players-ul"></ul>
+  </div>
+  
     <div id="game-controls">
         <h2>Game Control</h2>
-        <button onclick="advanceGame()">Next Phase</button>
+        <button id="advanceGameBtn">Next Phase</button>
         <p id="phase-status">Waiting for players...</p>
       </div>
-      
-      <script>
-        function advanceGame() {
-          fetch('/nextPhase')
-            .then(res => res.text())
-            .then(msg => {
-              document.getElementById('phase-status').innerText = msg;
-            })
-            .catch(err => {
-              console.error('Failed to advance phase:', err);
-              alert("Error advancing phase.");
-            });
-        }
-      </script>
     <div class="section">
       <h2>Player Actions</h2>
-      <button onclick="sendAction('check')">Check</button>
-      <button onclick="sendAction('raise')">Raise</button>
-      <button onclick="sendAction('fold')">Fold</button>
+      <button id="checkBtn">Check</button>
+      <button id="raiseBtn">Raise</button>
+      <button id="foldBtn">Fold</button>
     </div>
-
-    <script>
-    function sendAction(action) {
-      fetch('/action', {
-        method: 'POST',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: playerId, action: action })
-      })
-      .then(res => res.text())
-      .then(msg => {
-        console.log("Action result:", msg);
-        alert(msg);
-      })
-      .catch(err => {
-        console.error("Action failed:", err);
-        alert("Failed to send action.");
-      });
-    }
-    </script>
 
     <div id="community">
         <h2>Community Cards</h2>
         <div id="cards"></div>
     </div>
-
-    <script>
-        function fetchGamestate() {
-          fetch('/gamestate')
-            .then(res => res.json())
-            .then(data => {
-              const cardsDiv = document.getElementById('cards');
-              cardsDiv.innerHTML = "";  // clear previous cards
-              data.community.forEach(card => {
-                const span = document.createElement("span");
-                span.textContent = card + " ";
-                span.style.marginRight = "10px";
-                cardsDiv.appendChild(span);
-              });
-            });
-        }
-        
-        // Poll every 2 seconds
-        setInterval(fetchGamestate, 2000);
-        </script>
-  
       
 </body>
 </html>

@@ -24,6 +24,7 @@ struct Player {
     bool hasCard1 = false;
     bool hasCard2 = false;
     bool active = true;
+    bool ready = false;
 };
 
 // Declare global variables

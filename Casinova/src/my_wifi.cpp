@@ -6,6 +6,9 @@
 #include "motors.h"
 #include "game.h"
 #include "structs.h"
+#include <AsyncWebSocket.h>
+
+AsyncWebSocket ws("/ws");  // WebSocket endpoint
 
 AsyncWebServer server(80);
 
@@ -34,6 +37,18 @@ void initWifi() {
     WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
         Serial.println("Device connected to AP");
     }, ARDUINO_EVENT_WIFI_AP_STACONNECTED);
+
+
+    // Web Sockets
+    ws.onEvent([](AsyncWebSocket *server, AsyncWebSocketClient *client, 
+    AwsEventType type, void *arg, uint8_t *data, size_t len) {
+    if (type == WS_EVT_CONNECT) {
+    Serial.printf("WebSocket client %u connected\n", client->id());
+    } else if (type == WS_EVT_DISCONNECT) {
+    Serial.printf("WebSocket client %u disconnected\n", client->id());
+    }
+    });
+    server.addHandler(&ws);
 
     // Initialize LittleFS
     if (!LittleFS.begin()) {
@@ -115,6 +130,7 @@ void initWifi() {
             Serial.println("New player joined: " + name);
         }
         request->send(200, "text/plain", name);
+        broadcastPlayerList();
     });
     
     
@@ -160,6 +176,69 @@ void initWifi() {
     });
     
 
+    server.on("/ready", HTTP_POST, [](AsyncWebServerRequest *request) { }, NULL,
+    [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    StaticJsonDocument<128> doc;
+        if (deserializeJson(doc, data, len)) {
+            request->send(400, "text/plain", "Invalid JSON");
+            return;
+        }
+
+        String id = doc["id"];
+        if (!players.count(id)) {
+            request->send(404, "text/plain", "Player not found");
+            return;
+        }
+
+        players[id].ready = true;
+
+        bool allReady = players.size() >= 2;
+        for (auto& p : players) {
+            if (!p.second.ready) {
+                allReady = false;
+                break;
+            }
+        }
+
+        if (allReady) {
+            // advanceGame();
+        }
+
+        request->send(200, "text/plain", "Marked ready");
+    });
+
+    server.on("/players", HTTP_GET, [](AsyncWebServerRequest *request){
+        StaticJsonDocument<512> doc;
+        JsonArray arr = doc.createNestedArray("players");
+
+        for (const auto& p : players) {
+            JsonObject obj = arr.createNestedObject();
+            obj["id"] = p.second.id;
+            obj["ready"] = p.second.ready;
+        }
+
+        String json;
+        serializeJson(doc, json);
+        request->send(200, "application/json", json);
+        broadcastPlayerList();
+    });
+
+    
 
     server.begin();
+}
+
+void broadcastPlayerList() {
+    StaticJsonDocument<512> doc;
+    JsonArray arr = doc.createNestedArray("players");
+
+    for (auto& p : players) {
+        JsonObject obj = arr.createNestedObject();
+        obj["id"] = p.second.id;
+        obj["ready"] = p.second.ready;
+    }
+
+    String json;
+    serializeJson(doc, json);
+    ws.textAll(json);  // Broadcast to all WebSocket clients
 }
