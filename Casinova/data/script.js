@@ -54,6 +54,24 @@ function rotate() {
 }
     
 async function ensurePlayer() {
+  playerID = localStorage.getItem("playerId");
+
+  if (playerId) {
+    // Reuse existing playerId by sending it as a name
+    const url = `/join?name=${encodeURIComponent(playerId)}`;
+    const res = await fetch(url);
+
+    if (res.status === 200) {
+      playerId = await res.text();
+      localStorage.setItem("playerId", playerId);
+      console.log("Rejoined as", playerId);
+    } else {
+      console.warn("Join failed, clearing local storage...");
+      localStorage.removeItem("playerId");
+      playerId = null;
+    }
+  }
+  
   if (!playerId) {
       const name = prompt("Enter your name (or leave blank for auto-assigned):");
       const url = name ? `/join?name=${encodeURIComponent(name)}` : '/join';
@@ -136,7 +154,7 @@ function sendReady() {
   });
 }
 
-export function fetchPlayers() {
+function fetchPlayers() {
   fetch("/players")
     .then(res => res.json())
     .then(data => {
@@ -144,7 +162,7 @@ export function fetchPlayers() {
       ul.innerHTML = "";
       data.players.forEach(p => {
         const li = document.createElement("li");
-        li.textContent = `${p.id} ${p.ready ? "✅" : ""}`;
+        li.textContent = `${p.id} ${p.ready ? "yes" : "no"}`;
         ul.appendChild(li);
       });
     })
@@ -154,7 +172,9 @@ export function fetchPlayers() {
 
 
 window.addEventListener("DOMContentLoaded", () => {
+  console.log("thisran1")
   ensurePlayer();
+  console.log("thisran2")
   // setInterval(fetchGamestate, 2000);
 
   document.getElementById("captureBtn")?.addEventListener("click", capture);

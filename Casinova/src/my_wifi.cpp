@@ -12,21 +12,38 @@ AsyncWebSocket ws("/ws");  // WebSocket endpoint
 
 AsyncWebServer server(80);
 
+
+void broadcastPlayerList() {
+    StaticJsonDocument<512> doc;
+    JsonArray arr = doc.createNestedArray("players");
+
+    for (auto& p : players) {
+        JsonObject obj = arr.createNestedObject();
+        obj["id"] = p.second.id;
+        obj["ready"] = p.second.ready;
+    }
+
+    String json;
+    serializeJson(doc, json);
+    ws.textAll(json);  // Broadcast to all WebSocket clients
+}
+
+
 void initWifi() {
-    // WiFi.mode(WIFI_AP_STA);     // STA (router mode)
-    WiFi.mode(WIFI_AP);
+    WiFi.mode(WIFI_AP_STA);     // STA (router mode)
+    // WiFi.mode(WIFI_AP);
 
 
-    // WiFi.begin("2.4 410GRN-U313", "CXNK001CBEAB");
-    // Serial.print("Connecting to WiFi");
-    // while (WiFi.status() != WL_CONNECTED) {
-    //     delay(500);
-    //     Serial.print(".");
-    // }
+    WiFi.begin("2.4 410GRN-U313", "CXNK001CBEAB");
+    Serial.print("Connecting to WiFi");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
 
-    // Serial.println("\nConnected to router!");
-    // Serial.print("Local IP: ");
-    // Serial.println(WiFi.localIP());
+    Serial.println("\nConnected to router!");
+    Serial.print("Local IP: ");
+    Serial.println(WiFi.localIP());
 
     // AP (access point)
     WiFi.softAP("Casinova", "");
@@ -203,8 +220,8 @@ void initWifi() {
         if (allReady) {
             // advanceGame();
         }
-
         request->send(200, "text/plain", "Marked ready");
+        broadcastPlayerList();
     });
 
     server.on("/players", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -226,19 +243,4 @@ void initWifi() {
     
 
     server.begin();
-}
-
-void broadcastPlayerList() {
-    StaticJsonDocument<512> doc;
-    JsonArray arr = doc.createNestedArray("players");
-
-    for (auto& p : players) {
-        JsonObject obj = arr.createNestedObject();
-        obj["id"] = p.second.id;
-        obj["ready"] = p.second.ready;
-    }
-
-    String json;
-    serializeJson(doc, json);
-    ws.textAll(json);  // Broadcast to all WebSocket clients
 }
