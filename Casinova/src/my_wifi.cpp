@@ -46,6 +46,10 @@ void initWifi() {
         request->send(LittleFS, "/index.html", String(), false);
     });
 
+    server.on("/debug", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(LittleFS, "/debug.html", String(), false);
+    });
+
     server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(LittleFS, "/script.js", "application/javascript");
     });

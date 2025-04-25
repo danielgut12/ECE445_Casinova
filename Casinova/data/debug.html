@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Casinova Controller</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+<body>
+  <p id="player-id"></p>
+
+    <h1>Casinova Control Panel</h1>
+
+    <div class="section">
+        <h2>Card Capture</h2>
+        <button id="captureBtn">Capture</button><br><br>
+        <img id="snapshot" width="320" height="240"/>
+    </div>
+
+    <div class="section">
+        <h2>Ejection Motor</h2>
+        <input id="distanceInput" type="number" placeholder="Distance (mm)" value="750" />
+        <button id="ejectBtn">Eject</button>
+    </div>
+
+    <div class="section">
+        <h2>Swivel Motor</h2>
+        <input id="angleInput" type="number" placeholder="Degrees" value="90" />
+        <button id="rotateBtn">Rotate</button>
+    </div>
+    <div id="game-controls">
+        <h2>Game Control</h2>
+        <button id="advanceGameBtn">Next Phase</button>
+        <p id="phase-status">Waiting for players...</p>
+      </div>
+    <div class="section">
+      <h2>Player Actions</h2>
+      <button id="checkBtn">Check</button>
+      <button id="raiseBtn">Raise</button>
+      <button id="foldBtn">Fold</button>
+    </div>
+
+    <div id="community">
+        <h2>Community Cards</h2>
+        <div id="cards"></div>
+    </div>
+      
+</body>
+</html>
