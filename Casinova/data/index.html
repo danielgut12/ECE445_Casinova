@@ -6,6 +6,8 @@
     <script src="/script.js" defer></script>
 </head>
 <body>
+  <p id="player-id"></p>
+
     <h1>Casinova Control Panel</h1>
 
     <div class="section">
@@ -44,6 +46,31 @@
             });
         }
       </script>
+    <div class="section">
+      <h2>Player Actions</h2>
+      <button onclick="sendAction('check')">Check</button>
+      <button onclick="sendAction('raise')">Raise</button>
+      <button onclick="sendAction('fold')">Fold</button>
+    </div>
+
+    <script>
+    function sendAction(action) {
+      fetch('/action', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: playerId, action: action })
+      })
+      .then(res => res.text())
+      .then(msg => {
+        console.log("Action result:", msg);
+        alert(msg);
+      })
+      .catch(err => {
+        console.error("Action failed:", err);
+        alert("Failed to send action.");
+      });
+    }
+    </script>
 
     <div id="community">
         <h2>Community Cards</h2>
@@ -69,6 +96,7 @@
         // Poll every 2 seconds
         setInterval(fetchGamestate, 2000);
         </script>
+  
       
 </body>
 </html>

@@ -1,3 +1,4 @@
+let playerId = localStorage.getItem("playerId");
 let captureCooldown = false;
 
 function capture() {
@@ -31,6 +32,19 @@ function rotate() {
       .then(response => response.text())
       .then(msg => alert(msg));
 }
+    
+async function ensurePlayer() {
+    if (!playerId) {
+        const name = prompt("Enter your name (or leave blank for auto-assigned):");
+        const url = name ? `/join?name=${encodeURIComponent(name)}` : '/join';
+        const res = await fetch(url);
+        playerId = await res.text();
+        localStorage.setItem("playerId", playerId);
+        console.log("Joined as", playerId);
+        document.getElementById("player-id").innerText = `Logged in as: ${playerId}`;
+    }
+}
 
+ensurePlayer();
 
 // TO UPLOAD THESE FILES, use "pio run --target uploadfs"

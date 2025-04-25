@@ -10,20 +10,20 @@
 AsyncWebServer server(80);
 
 void initWifi() {
-    WiFi.mode(WIFI_AP_STA);     // STA (router mode)
-    // WiFi.mode(WIFI_AP);
+    // WiFi.mode(WIFI_AP_STA);     // STA (router mode)
+    WiFi.mode(WIFI_AP);
 
 
-    WiFi.begin("2.4 410GRN-U313", "CXNK001CBEAB");
-    Serial.print("Connecting to WiFi");
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
+    // WiFi.begin("2.4 410GRN-U313", "CXNK001CBEAB");
+    // Serial.print("Connecting to WiFi");
+    // while (WiFi.status() != WL_CONNECTED) {
+    //     delay(500);
+    //     Serial.print(".");
+    // }
 
-    Serial.println("\nConnected to router!");
-    Serial.print("Local IP: ");
-    Serial.println(WiFi.localIP());
+    // Serial.println("\nConnected to router!");
+    // Serial.print("Local IP: ");
+    // Serial.println(WiFi.localIP());
 
     // AP (access point)
     WiFi.softAP("Casinova", "");
@@ -102,17 +102,15 @@ void initWifi() {
     });
 
     server.on("/join", HTTP_GET, [](AsyncWebServerRequest *request){
-        String id = "player" + String(nextPlayerIndex++);
-        
-        if (players.count(id) == 0) {
+        String name = request->hasParam("name") ? request->getParam("name")->value() : "player" + String(nextPlayerIndex++);
+        if (players.count(name) == 0) {
             Player p;
-            p.id = id;
-            players[id] = p;
-            playerOrder.push_back(id);
-            Serial.println("New player joined: " + id);
+            p.id = name;
+            players[name] = p;
+            playerOrder.push_back(name);
+            Serial.println("New player joined: " + name);
         }
-    
-        request->send(200, "text/plain", id);
+        request->send(200, "text/plain", name);
     });
     
     
