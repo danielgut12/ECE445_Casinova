@@ -146,8 +146,10 @@ void initWifi() {
             playerOrder.push_back(name);
             Serial.println("New player joined: " + name);
         }
-        request->send(200, "text/plain", name);
+
+        // broadcast BEFORE you send req
         broadcastPlayerList();
+        request->send(200, "text/plain", name);
     });
     
     
@@ -220,8 +222,10 @@ void initWifi() {
         if (allReady) {
             // advanceGame();
         }
-        request->send(200, "text/plain", "Marked ready");
+
+        // broadcast BEFORE you req
         broadcastPlayerList();
+        request->send(200, "text/plain", "Marked ready");
     });
 
     server.on("/players", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -236,8 +240,10 @@ void initWifi() {
 
         String json;
         serializeJson(doc, json);
-        request->send(200, "application/json", json);
+
+        // broadcast BEFORE send req
         broadcastPlayerList();
+        request->send(200, "application/json", json);
     });
 
     

@@ -5,6 +5,17 @@ let captureCooldown = false;
 // Web Sockets
 const socket = new WebSocket(`ws://${location.host}/ws`);
 
+
+// ON SOCKET OPEN (basically boot up)
+socket.onopen = function () {
+  console.log("WebSocket connected");
+
+  // After connection, fetch players manually once
+  fetchPlayers();
+};
+
+
+// on socket update (whenever server pushes new update)
 socket.onmessage = function (event) {
   const data = JSON.parse(event.data);
   if (data.players) {
@@ -71,7 +82,7 @@ async function ensurePlayer() {
       playerId = null;
     }
   }
-  
+
   if (!playerId) {
       const name = prompt("Enter your name (or leave blank for auto-assigned):");
       const url = name ? `/join?name=${encodeURIComponent(name)}` : '/join';
