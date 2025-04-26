@@ -148,6 +148,7 @@ void resetGame() {
 
 void dealHoleCards() {
     Serial.printf("[DEBUG] Dealing cards to %d players\n", playerOrder.size());
+    // Dealing VIRTUALLY
     for (int i = 0; i < playerOrder.size(); ++i) {
         const String& id = playerOrder[i];
         Player& p = players[id];
@@ -166,6 +167,12 @@ void dealHoleCards() {
             cardToString(p.card1).c_str(),
             cardToString(p.card2).c_str());
     }
+
+    // Dealing PHYSCIALLY
+    // for (int i = 0; i < playerOrder.size(); ++i) {
+    //     rotateToPlayer(i, playerOrder.size());
+    //     pushCardsWithDistance();
+    // }
 
     //  AFTER dealing, notify all players
     StaticJsonDocument<64> doc;
