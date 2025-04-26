@@ -37,6 +37,24 @@ socket.onmessage = function(event) {
     console.log("Received new hand event!");
     fetchHand();  // fetch your updated hand automatically
   }
+
+  // Catches phas and community data from broadcastGameState()
+  if (data.phase && data.community) {
+    console.log("Received game state update!");
+    console.log("Current Phase:", data.phase);
+    console.log("Community Cards:", data.community);
+
+    // Example: Update the DOM
+    document.getElementById("phase").textContent = `Next Phase: ${data.phase}`;
+
+    const communityDiv = document.getElementById("community-cards");
+    communityDiv.innerHTML = "";
+    data.community.forEach(card => {
+      const cardElem = document.createElement("div");
+      cardElem.textContent = card; // You can style this or use an image
+      communityDiv.appendChild(cardElem);
+    });
+  }
 };
 
 
@@ -141,17 +159,17 @@ function sendAction(action) {
   });
 }
 
-// function advanceGame() {
-//   fetch('/nextPhase')
-//     .then(res => res.text())
-//     .then(msg => {
-//       document.getElementById('phase-status').innerText = msg;
-//     })
-//     .catch(err => {
-//       console.error('Failed to advance phase:', err);
-//       alert("Error advancing phase.");
-//     });
-// }
+function advanceGame() {
+  fetch('/nextPhase')
+    .then(res => res.text())
+    .then(msg => {
+      document.getElementById('phase-status').innerText = msg;
+    })
+    .catch(err => {
+      console.error('Failed to advance phase:', err);
+      alert("Error advancing phase.");
+    });
+}
 
 function sendReady() {
   const btn = document.getElementById("readyBtn");
@@ -195,7 +213,7 @@ function fetchHand() {
   fetch(`/hand?id=${encodeURIComponent(playerId)}`)
     .then(res => res.json())
     .then(data => {
-      console.log("[DEBUG] Hand data:", data);  // ✅ print what server sent
+      console.log("[DEBUG] Hand data:", data); 
       const handDiv = document.getElementById("hand");
       handDiv.innerHTML = "";
 

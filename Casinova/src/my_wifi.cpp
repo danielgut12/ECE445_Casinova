@@ -221,10 +221,10 @@ void initWifi() {
     });
 
     // TESTING: increment phase
-    // server.on("/nextPhase", HTTP_GET, [](AsyncWebServerRequest *request){
-    //     nextPhase();
-    //     request->send(200, "text/plain", "Phase advanced to: " + String(currentPhase));
-    // });
+    server.on("/nextPhase", HTTP_GET, [](AsyncWebServerRequest *request){
+        nextPhase();
+        request->send(200, "text/plain", "Phase advanced to: " + String(currentPhase));
+    });
 
     server.on("/gamestate", HTTP_GET, [](AsyncWebServerRequest *request){
         StaticJsonDocument<512> doc;
@@ -257,7 +257,7 @@ void initWifi() {
 
         players[id].ready = true;
 
-        bool allReady = players.size() >= 1; // SHOULD BE 2 BUT I MEAN TESTING
+        bool allReady = players.size() >= 2; // SHOULD BE 2 BUT I MEAN TESTING
         for (auto& p : players) {
             if (!p.second.ready) {
                 allReady = false;

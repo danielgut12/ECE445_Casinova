@@ -37,44 +37,64 @@ void broadcastGameState() {
 
 // Phases for poker game
 void nextPhase() {
-    switch (currentPhase) {
-        case WAITING:
+    if (currentPhase == WAITING) {
         Serial.println("Waiting");
-        // if (players.size() >= 2)
-        currentPhase = PREFLOP;
-        nextPhase();
+        if (players.size() >= 2) {
+            currentPhase = PREFLOP;
+        } else {
+            // Not enough players, stay in WAITING
+            broadcastGameState();
+            return;
+        }
+    }
+
+    switch (currentPhase) {
         case PREFLOP:
-        Serial.println("PreFlop");
+            Serial.println("PreFlop");
             dealHoleCards();
             currentPhase = FLOP;
             break;
-        case FLOP:
-            dealCommunityCards(3);
 
+        case FLOP:
+            Serial.println("Flop");
+            dealCommunityCards(3);
             currentPhase = TURN;
             break;
+
         case TURN:
+            Serial.println("Turn");
             dealCommunityCards(1);
             currentPhase = RIVER;
             break;
+
         case RIVER:
+            Serial.println("River");
             dealCommunityCards(1);
             currentPhase = SHOWDOWN;
             break;
+
         case SHOWDOWN:
-            // displayFinalHands(); // Optional
+            Serial.println("Showdown");
+            // Optionally display final hands
             currentPhase = RESET;
             break;
+
         case RESET:
+            Serial.println("Resetting game");
             resetGame();
+            currentPhase = WAITING;
+            break;
+
+        default:
+            Serial.println("Unknown phase");
             currentPhase = WAITING;
             break;
     }
 
-    
     clearPlayerActions();
     broadcastGameState();
 }
+
 
 void onPlayerAction(const String& id, const String& action) {
     if (players.count(id)) {
@@ -98,48 +118,33 @@ void clearPlayerActions() {
 }
 
 void resetGame() {
-    playerOrder.clear();
     currentDealIndex = 0;
-    players.clear();
-}
 
-/*
-void dealHoleCards() {
-    for (int i = 0; i < playerOrder.size(); ++i) {
-        const String& id = playerOrder[i];
-        Player& p = players[id];
-        if (!p.active) continue;
-        
-        // Uncomment once motor is working
-        // rotateToPlayer(i, playerOrder.size());
-        
-        Card card;
-        
-        // pushCardsWithDistance();     // First card
-        // captureAndDetectCard(card);  // Fills via reference
-        card = drawCard();
-        p.card1 = card;
-        p.hasCard1 = true;
-        
-        // pushCardsWithDistance();     // Second card
-        // captureAndDetectCard(card);
-        card = drawCard();
-        p.card2 = card;
-        p.hasCard2 = true;
+    // Rotate playerOrder so dealer moves
+    if (!playerOrder.empty()) {
+        String firstPlayer = playerOrder.front();
+        playerOrder.erase(playerOrder.begin());
+        playerOrder.push_back(firstPlayer);
     }
-    
-    // Serial print cards
-    for (auto& id : playerOrder) {
-        Player& p = players[id];
-        Serial.printf("Player %s: %d of %d and %d of %d\n",
-        id.c_str(),
-        p.card1.rank, p.card1.suit,
-        p.card2.rank, p.card2.suit);
-    }
-    
-}
 
-*/
+    for (auto& pair : players) {
+        Player& p = pair.second;
+        p.card1 = Card{};      // Clear card1
+        p.card2 = Card{};      // Clear card2
+        p.hasCard1 = false;
+        p.hasCard2 = false;
+        p.action = "";
+        p.active = true;
+        p.ready = true;       // Optional: force them to click "Ready" again
+    }
+
+    communityCards.clear();   // Clear board cards
+    initMockDeck();           // Reshuffle deck
+    Serial.println("Players after reset:");
+    for (const auto& pair : players) {
+        Serial.println(pair.first);  // Print player ID
+    }
+}
 
 void dealHoleCards() {
     Serial.printf("[DEBUG] Dealing cards to %d players\n", playerOrder.size());

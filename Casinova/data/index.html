@@ -19,21 +19,23 @@
     <div id="hand"></div>
   </div>
   
-    <div id="game-controls">
-        <h2>Game Control</h2>
-        <button id="advanceGameBtn">Next Phase</button>
-        <p id="phase-status">Waiting for players...</p>
-      </div>
+  <div id="game-controls" class="section">
+    <h2>Game Control</h2>
+    <button id="advanceGameBtn">Next Phase</button>
+    <p id="phase-status">Waiting for players...</p>
+    <p id="phase">Phase: Waiting</p> <!-- ADDED for live phase updates -->
+  </div>
+
+  <div id="community" class="section">
+    <h2>Community Cards</h2>
+    <div id="community-cards"></div> <!-- CHANGED id from "cards" to "community-cards" -->
+  </div>
+
     <div class="section">
       <h2>Player Actions</h2>
       <button id="checkBtn">Check</button>
       <button id="raiseBtn">Raise</button>
       <button id="foldBtn">Fold</button>
-    </div>
-
-    <div id="community">
-        <h2>Community Cards</h2>
-        <div id="cards"></div>
     </div>
       
 </body>

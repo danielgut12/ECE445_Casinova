@@ -54,10 +54,10 @@ String rankToChar(Rank rank) {
 
 String suitToChar(Suit suit) {
   switch (suit) {
-    case CLUBS: return "C";
-    case SPADES: return "S";
-    case HEARTS: return "H";
-    case DIAMONDS: return "D";
+    case CLUBS: return "♣";
+    case SPADES: return "♠";
+    case HEARTS: return "♥";
+    case DIAMONDS: return "♦";
     default: return "?";
   }
 }
