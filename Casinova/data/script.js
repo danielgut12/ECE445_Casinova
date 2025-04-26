@@ -83,14 +83,14 @@ function eject() {
   const dist = document.getElementById('distanceInput').value;
   fetch('/eject?distance=' + dist)
       .then(response => response.text())
-      .then(msg => alert(msg));
+      // .then(msg => alert(msg));
 }
 
 function rotate() {
   const angle = document.getElementById('angleInput').value;
   fetch('/rotate?degrees=' + angle)
       .then(response => response.text())
-      .then(msg => alert(msg));
+      // .then(msg => alert(msg));
 }
     
 async function ensurePlayer() {
@@ -142,6 +142,8 @@ function fetchGamestate() {
     });
 }
 
+
+// unused
 function sendAction(action) {
   fetch('/action', {
     method: 'POST',
@@ -184,7 +186,7 @@ function sendReady() {
   .then(res => res.text())
   .then(msg => {
     btn.innerText = "Ready";
-    alert(msg);
+    // alert(msg);
   })
   .catch(err => {
     btn.disabled = false;

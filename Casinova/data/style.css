@@ -1,32 +1,119 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: sans-serif;
-  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
+  color: #ffffff;
   padding: 20px;
-  background-color: #f4f4f4;
+  line-height: 1.5;
 }
 
-h1 {
-  color: #333;
+/* Headings */
+h1, h2 {
+  margin-bottom: 10px;
 }
 
+/* Sections */
 .section {
-  margin-top: 40px;
-  background-color: #fff;
+  background: #1f1f1f;
   border-radius: 10px;
-  padding: 20px;
-  display: inline-block;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
 }
 
+/* Buttons */
 button {
-  padding: 10px 20px;
-  font-size: 16px;
-  margin: 10px;
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  margin: 10px 5px 0 0;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-input {
-  padding: 8px;
-  font-size: 16px;
-  width: 150px;
+button:hover {
+  background-color: #0097a7;
+}
+
+/* Player List */
+#players-ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#players-ul li {
+  background: #2a2a2a;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 6px;
+}
+
+/* Your Hand */
+#hand {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#hand div {
+  background: #333;
+  border-radius: 8px;
+  padding: 15px;
+  width: 60px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* Community Cards */
+#community-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#community-cards div {
+  background: #333;
+  border-radius: 8px;
+  padding: 15px;
+  width: 60px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* Game Control */
+#phase-status, #phase {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  #hand, #community-cards {
+    justify-content: center;
+  }
 }
