@@ -232,7 +232,9 @@ void initWifi() {
             return;
         }
 
-        players[id].ready = true;
+
+        // ready button toggle logic
+        players[id].ready = !players[id].ready;
 
         bool allReady = players.size() >= 2; // SHOULD BE 2 BUT I MEAN TESTING
         for (auto& p : players) {

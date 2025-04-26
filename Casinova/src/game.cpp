@@ -5,6 +5,7 @@
 #include "motors.h"
 #include "camera.h"
 #include "deck.h"
+// #include "poker-odds.h"
 
 extern AsyncWebSocket ws;
 
@@ -53,7 +54,20 @@ void broadcastGameState() {
 void nextPhase() {
     if (currentPhase == WAITING) {
         Serial.println("Waiting");
-        if (players.size() >= 2) {
+
+        // Check if ALL players are ready
+        bool allReady = true;
+        for (const auto& p : players) {
+            if (!p.second.ready) {
+                allReady = false;
+                Serial.println("NOT READY");
+                break;
+            }
+        }
+
+        // Check if enough players and all ready
+        if (players.size() >= 2 && allReady) {
+            Serial.println("All players ready. Starting game...");
             currentPhase = PREFLOP;
         } else {
             broadcastGameState();
@@ -61,11 +75,12 @@ void nextPhase() {
         }
     }
 
+    // Do actions based on the current phase
     switch (currentPhase) {
         case PREFLOP:
             Serial.println("PreFlop");
             dealHoleCards();
-            currentPhase = FLOP;
+            currentPhase = FLOP; // advance after dealing
             break;
 
         case FLOP:
@@ -88,6 +103,7 @@ void nextPhase() {
 
         case SHOWDOWN:
             Serial.println("Showdown");
+            // Optional: handle showdown logic here
             currentPhase = RESET;
             break;
 
@@ -103,8 +119,8 @@ void nextPhase() {
             break;
     }
 
-    clearPlayerActions();
-    broadcastGameState();
+    clearPlayerActions();   // Clear actions after each phase
+    broadcastGameState();   // Always broadcast AFTER updating everything
 }
 
 
@@ -171,7 +187,7 @@ void resetGame() {
         p.hasCard2 = false;
         p.action = "";
         p.active = true;
-        p.ready = true;       // Optional: force them to click "Ready" again
+        // p.ready = true;       // Optional: force them to click "Ready" again
     }
 
     communityCards.clear();   // Clear board cards
@@ -180,6 +196,7 @@ void resetGame() {
     for (const auto& pair : players) {
         Serial.println(pair.first);  // Print player ID
     }
+
 }
 
 void dealHoleCards() {

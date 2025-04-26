@@ -1,5 +1,21 @@
 let playerId = localStorage.getItem("playerId");
 let captureCooldown = false;
+let isReady = false;
+
+// Poker Stuff
+let lookup = { rank: {}, flush: {} };
+
+// Load lookup.json on page load
+fetch('/lookup.json')
+  .then(response => response.json())
+  .then(data => {
+    lookup = data;
+    console.log('Lookup loaded!');
+    document.getElementById('calculateBtn').disabled = false; // enable button
+  })
+  .catch(error => {
+    console.error('Failed to load lookup.json:', error);
+  });
 
 
 // Web Sockets
@@ -15,7 +31,7 @@ socket.onopen = function () {
   // After connection, fetch players manually once
   fetchPlayers();
   fetchGamestate();
-  fetchHand();
+  // fetchHand();
 };
 
 
@@ -113,6 +129,7 @@ async function ensurePlayer() {
     // Reuse existing playerId by sending it as a name
     const url = `/join?name=${encodeURIComponent(playerId)}`;
     const res = await fetch(url);
+    isReady = false;
 
     if (res.status === 200) {
       playerId = await res.text();
@@ -157,28 +174,35 @@ function fetchGamestate() {
 
 
 // unused
-function sendAction(action) {
-  fetch('/action', {
-    method: 'POST',
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: playerId, action: action })
-  })
-  .then(res => res.text())
-  .then(msg => {
-    console.log("Action result:", msg);
-    alert(msg);
-  })
-  .catch(err => {
-    console.error("Action failed:", err);
-    alert("Failed to send action.");
-  });
-}
+// function sendAction(action) {
+//   fetch('/action', {
+//     method: 'POST',
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ id: playerId, action: action })
+//   })
+//   .then(res => res.text())
+//   .then(msg => {
+//     console.log("Action result:", msg);
+//     alert(msg);
+//   })
+//   .catch(err => {
+//     console.error("Action failed:", err);
+//     alert("Failed to send action.");
+//   });
+// }
 
 function advanceGame() {
   fetch('/nextPhase')
     .then(res => res.text())
     .then(msg => {
-      document.getElementById('phase-status').innerText = msg;
+      const phaseStatus = document.getElementById('phase-status');
+
+      // If waiting for players, display, else leave empty
+      if (msg.trim() === "WAITING") {
+        phaseStatus.innerText = "Waiting for players...";
+      } else {
+        phaseStatus.innerText = "";
+      }
     })
     .catch(err => {
       console.error('Failed to advance phase:', err);
@@ -186,26 +210,25 @@ function advanceGame() {
     });
 }
 
-function sendReady() {
-  const btn = document.getElementById("readyBtn");
-  btn.disabled = true;
-  btn.innerText = "Waiting...";
-
+function toggleReady(btn) {
+  // btn.disabled = true;
+  
   fetch("/ready", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: playerId })
+    body: JSON.stringify({ id: playerId, ready: !isReady })  // send the *next* state
   })
   .then(res => res.text())
   .then(msg => {
-    btn.innerText = "Ready";
+    isReady = !isReady;  // Flip state only after success
+    btn.innerText = isReady ? "Ready" : "I'm Ready";
+    btn.disabled = false;
     // alert(msg);
   })
   .catch(err => {
     btn.disabled = false;
-    btn.innerText = "I'm Ready";
     console.error("Ready failed:", err);
-    alert("Failed to mark as ready.");
+    alert("Failed to toggle ready.");
   });
 }
 
@@ -279,7 +302,7 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("rotateBtn")?.addEventListener("click", rotate);
   document.getElementById("advanceGameBtn")?.addEventListener("click", advanceGame);
   document.getElementById("foldBtn")?.addEventListener("click", fold);
-  document.getElementById("readyBtn")?.addEventListener("click", sendReady);
+  document.getElementById("readyBtn")?.addEventListener("click", toggleReady);
 });
 
 // TO UPLOAD THESE FILES, use "pio run --target uploadfs"
