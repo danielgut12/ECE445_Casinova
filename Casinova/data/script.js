@@ -245,9 +245,9 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("ejectBtn")?.addEventListener("click", eject);
   document.getElementById("rotateBtn")?.addEventListener("click", rotate);
   document.getElementById("advanceGameBtn")?.addEventListener("click", advanceGame);
-  document.getElementById("checkBtn")?.addEventListener("click", () => sendAction("check"));
-  document.getElementById("raiseBtn")?.addEventListener("click", () => sendAction("raise"));
-  document.getElementById("foldBtn")?.addEventListener("click", () => sendAction("fold"));
+  // document.getElementById("checkBtn")?.addEventListener("click", () => sendAction("check"));
+  // document.getElementById("raiseBtn")?.addEventListener("click", () => sendAction("raise"));
+  // document.getElementById("foldBtn")?.addEventListener("click", () => sendAction("fold"));
   document.getElementById("readyBtn")?.addEventListener("click", sendReady);
 
 
