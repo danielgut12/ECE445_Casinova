@@ -12,6 +12,8 @@ AsyncWebSocket ws("/ws");  // WebSocket endpoint
 
 AsyncWebServer server(80);
 
+std::map<uint32_t, String> clientIdToPlayerId;  // WebSocket client ID → Player ID mapping
+extern std::map<String, Player> players;        // already existing players map
 
 void broadcastPlayerList() {
     StaticJsonDocument<512> doc;
@@ -58,13 +60,50 @@ void initWifi() {
 
     // Web Sockets
     ws.onEvent([](AsyncWebSocket *server, AsyncWebSocketClient *client, 
-    AwsEventType type, void *arg, uint8_t *data, size_t len) {
-    if (type == WS_EVT_CONNECT) {
-    Serial.printf("WebSocket client %u connected\n", client->id());
-    } else if (type == WS_EVT_DISCONNECT) {
-    Serial.printf("WebSocket client %u disconnected\n", client->id());
+        AwsEventType type, void *arg, uint8_t *data, size_t len) {
+
+        if (type == WS_EVT_CONNECT) {
+        Serial.printf("WebSocket client connected: %u\n", client->id());
+        } 
+
+        else if (type == WS_EVT_DISCONNECT) {
+        Serial.printf("WebSocket client disconnected: %u\n", client->id());
+
+        uint32_t cid = client->id();
+        if (clientIdToPlayerId.count(cid)) {
+            String id = clientIdToPlayerId[cid];
+            players.erase(id);
+            clientIdToPlayerId.erase(cid);
+
+            broadcastPlayerList();
+            Serial.printf("Player %s removed after disconnect\n", id.c_str());
+        }
+        }
+
+        else if (type == WS_EVT_DATA) {
+        AwsFrameInfo *info = (AwsFrameInfo*)arg;
+
+        if (info->final && info->index == 0 && info->len == len) {
+            String msg = "";
+            for (size_t i = 0; i < len; i++) {
+                msg += (char)data[i];
+            }
+
+            Serial.printf("[DEBUG] Received WebSocket message: %s\n", msg.c_str());  // ADD THIS
+            StaticJsonDocument<200> doc;
+            DeserializationError err = deserializeJson(doc, msg);
+            if (!err) {
+                if (doc["type"] == "identify") {
+                    String id = doc["id"];
+                    clientIdToPlayerId[client->id()] = id;
+                    Serial.printf("Client %u linked to player %s\n", client->id(), id.c_str());
+                }
+            }
+        }
     }
-    });
+});
+
+
     server.addHandler(&ws);
 
     // Initialize LittleFS
@@ -138,19 +177,26 @@ void initWifi() {
     });
 
     server.on("/join", HTTP_GET, [](AsyncWebServerRequest *request){
-        String name = request->hasParam("name") ? request->getParam("name")->value() : "player" + String(nextPlayerIndex++);
-        if (players.count(name) == 0) {
-            Player p;
-            p.id = name;
-            players[name] = p;
-            playerOrder.push_back(name);
-            Serial.println("New player joined: " + name);
+        String id;
+    
+        if (request->hasParam("name")) {
+            id = request->getParam("name")->value();
+        } else {
+            id = "player" + String(nextPlayerIndex++);
         }
-
-        // broadcast BEFORE you send req
+    
+        if (!players.count(id)) {
+            Player p;
+            p.id = id;
+            players[id] = p;
+            playerOrder.push_back(id);
+        }
+    
         broadcastPlayerList();
-        request->send(200, "text/plain", name);
+        request->send(200, "text/plain", id);
     });
+    
+    
     
     
     // Action for Poker Route
@@ -175,10 +221,10 @@ void initWifi() {
     });
 
     // TESTING: increment phase
-    server.on("/nextPhase", HTTP_GET, [](AsyncWebServerRequest *request){
-        nextPhase();
-        request->send(200, "text/plain", "Phase advanced to: " + String(currentPhase));
-    });
+    // server.on("/nextPhase", HTTP_GET, [](AsyncWebServerRequest *request){
+    //     nextPhase();
+    //     request->send(200, "text/plain", "Phase advanced to: " + String(currentPhase));
+    // });
 
     server.on("/gamestate", HTTP_GET, [](AsyncWebServerRequest *request){
         StaticJsonDocument<512> doc;
@@ -211,7 +257,7 @@ void initWifi() {
 
         players[id].ready = true;
 
-        bool allReady = players.size() >= 2;
+        bool allReady = players.size() >= 1; // SHOULD BE 2 BUT I MEAN TESTING
         for (auto& p : players) {
             if (!p.second.ready) {
                 allReady = false;
@@ -220,7 +266,9 @@ void initWifi() {
         }
 
         if (allReady) {
-            // advanceGame();
+            Serial.println("All players ready. starting game");
+            nextPhase();
+            broadcastGameState();
         }
 
         // broadcast BEFORE you req
@@ -246,6 +294,63 @@ void initWifi() {
         request->send(200, "application/json", json);
     });
 
+    server.on("/remove", HTTP_GET, [](AsyncWebServerRequest *request){
+        if (!request->hasParam("id")) {
+            request->send(400, "text/plain", "Missing id");
+            return;
+        }
+    
+        String id = request->getParam("id")->value();
+        if (!players.count(id)) {
+            request->send(404, "text/plain", "Player not found");
+            return;
+        }
+    
+        // Find and erase from players
+        players.erase(id);
+    
+        // Also remove from clientIdToPlayerId map if exists
+        for (auto it = clientIdToPlayerId.begin(); it != clientIdToPlayerId.end(); ++it) {
+            if (it->second == id) {
+                clientIdToPlayerId.erase(it);
+                break;
+            }
+        }
+    
+        broadcastPlayerList();
+        Serial.printf("Player %s manually removed\n", id.c_str());
+        request->send(200, "text/plain", "Player " + id + " removed");
+    });
+    
+
+
+    server.on("/hand", HTTP_GET, [](AsyncWebServerRequest *request){
+        if (!request->hasParam("id")) {
+            request->send(400, "text/plain", "Missing id");
+            return;
+        }
+        String id = request->getParam("id")->value();
+        Serial.printf("[DEBUG] Hand requested for player: %s\n", id.c_str());
+        if (!players.count(id)) {
+            Serial.println("[DEBUG] Player not found!");
+            request->send(404, "text/plain", "Player not found");
+            return;
+        }
+    
+        Player& p = players[id];
+    
+        StaticJsonDocument<256> doc;
+        if (p.hasCard1) {
+            doc["card1"] = cardToString(p.card1);
+        }
+        if (p.hasCard2) {
+            doc["card2"] = cardToString(p.card2);
+        }
+    
+        String json;
+        serializeJson(doc, json);
+        request->send(200, "application/json", json);
+    });
     
 
     server.begin();

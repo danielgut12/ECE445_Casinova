@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+
+void broadcastGameState();
 void nextPhase();
 void onPlayerAction(const String& id, const String& action);
 void resetGame();

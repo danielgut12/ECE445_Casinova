@@ -46,25 +46,25 @@ void setup() {
 
 void loop() {
 
-  static bool ran = false;
+  // static bool ran = false;
 
-  if (!ran) {
-    // Fake player setup
-    // Player p1, p2;
-    // p1.id = "player1";
-    // p2.id = "player2";
-    // players["player1"] = p1;
-    // players["player2"] = p2;
-    // playerOrder.push_back("player1");
-    // playerOrder.push_back("player2");
+  // if (!ran) {
+  //   // Fake player setup
+  //   // Player p1, p2;
+  //   // p1.id = "player1";
+  //   // p2.id = "player2";
+  //   // players["player1"] = p1;
+  //   // players["player2"] = p2;
+  //   // playerOrder.push_back("player1");
+  //   // playerOrder.push_back("player2");
 
-    // Run test
-    dealHoleCards();
+  //   // Run test
+  //   dealHoleCards();
 
-    ran = true;
-  }
+  //   ran = true;
+  // }
 
-  delay(1000);
+  // delay(1000);
 
   // capture_and_send();
   // delay(100000);

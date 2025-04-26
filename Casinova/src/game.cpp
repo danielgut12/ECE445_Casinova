@@ -1,17 +1,50 @@
+#include <ArduinoJson.h>     // for StaticJsonDocument, serializeJson
+#include <AsyncWebSocket.h>  // for ws.textAll()
 #include "game.h"
 #include "structs.h"
 #include "motors.h"
 #include "camera.h"
 #include "deck.h"
 
+extern AsyncWebSocket ws;
+
+void broadcastGameState() {
+    StaticJsonDocument<512> doc;
+
+    // Current phase (e.g., "Pre-Flop", "Flop", etc.)
+    switch (currentPhase) {
+        case WAITING: doc["phase"] = "Waiting"; break;
+        case PREFLOP: doc["phase"] = "Pre-Flop"; break;
+        case FLOP: doc["phase"] = "Flop"; break;
+        case TURN: doc["phase"] = "Turn"; break;
+        case RIVER: doc["phase"] = "River"; break;
+        case SHOWDOWN: doc["phase"] = "Showdown"; break;
+        case RESET: doc["phase"] = "Reset"; break;
+    }
+
+    // Community cards
+    JsonArray community = doc.createNestedArray("community");
+    for (const auto& card : communityCards) {
+        community.add(cardToString(card)); // e.g., "AS" = Ace of Spades
+    }
+
+    // Serialize and send over WebSocket
+    String json;
+    serializeJson(doc, json);
+    ws.textAll(json);
+}
+
 
 // Phases for poker game
 void nextPhase() {
     switch (currentPhase) {
         case WAITING:
-            if (players.size() >= 2) currentPhase = PREFLOP;
-            break;
+        Serial.println("Waiting");
+        // if (players.size() >= 2)
+        currentPhase = PREFLOP;
+        nextPhase();
         case PREFLOP:
+        Serial.println("PreFlop");
             dealHoleCards();
             currentPhase = FLOP;
             break;
@@ -38,8 +71,9 @@ void nextPhase() {
             break;
     }
 
+    
     clearPlayerActions();
-    // notifyClients();  // Optional: use SSE/WebSocket/polling
+    broadcastGameState();
 }
 
 void onPlayerAction(const String& id, const String& action) {
@@ -108,6 +142,7 @@ void dealHoleCards() {
 */
 
 void dealHoleCards() {
+    Serial.printf("[DEBUG] Dealing cards to %d players\n", playerOrder.size());
     for (int i = 0; i < playerOrder.size(); ++i) {
         const String& id = playerOrder[i];
         Player& p = players[id];
@@ -126,7 +161,16 @@ void dealHoleCards() {
             cardToString(p.card1).c_str(),
             cardToString(p.card2).c_str());
     }
+
+    //  AFTER dealing, notify all players
+    StaticJsonDocument<64> doc;
+    doc["event"] = "newHand";
+
+    String json;
+    serializeJson(doc, json);
+    ws.textAll(json);  //  Push event to all WebSocket clients
 }
+
 
 void dealCommunityCards(int count) {
     for (int i = 0; i < count; ++i) {

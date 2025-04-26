@@ -10,24 +10,35 @@ const socket = new WebSocket(`ws://${location.host}/ws`);
 socket.onopen = function () {
   console.log("WebSocket connected");
 
+
+  socket.send(JSON.stringify({ type: "identify", id: playerId }));
   // After connection, fetch players manually once
   fetchPlayers();
+  fetchGamestate();
+  fetchHand();
 };
 
 
 // on socket update (whenever server pushes new update)
-socket.onmessage = function (event) {
+socket.onmessage = function(event) {
   const data = JSON.parse(event.data);
+
   if (data.players) {
     const ul = document.getElementById("players-ul");
     ul.innerHTML = "";
     data.players.forEach(p => {
       const li = document.createElement("li");
-      li.textContent = `${p.id} ${p.ready ? "ready" : "not ready"}`;
+      li.textContent = `${p.id} ${p.ready ? "Ready" : ""}`;
       ul.appendChild(li);
     });
   }
+
+  if (data.event === "newHand") {
+    console.log("Received new hand event!");
+    fetchHand();  // fetch your updated hand automatically
+  }
 };
+
 
 
 
@@ -130,17 +141,17 @@ function sendAction(action) {
   });
 }
 
-function advanceGame() {
-  fetch('/nextPhase')
-    .then(res => res.text())
-    .then(msg => {
-      document.getElementById('phase-status').innerText = msg;
-    })
-    .catch(err => {
-      console.error('Failed to advance phase:', err);
-      alert("Error advancing phase.");
-    });
-}
+// function advanceGame() {
+//   fetch('/nextPhase')
+//     .then(res => res.text())
+//     .then(msg => {
+//       document.getElementById('phase-status').innerText = msg;
+//     })
+//     .catch(err => {
+//       console.error('Failed to advance phase:', err);
+//       alert("Error advancing phase.");
+//     });
+// }
 
 function sendReady() {
   const btn = document.getElementById("readyBtn");
@@ -173,11 +184,35 @@ function fetchPlayers() {
       ul.innerHTML = "";
       data.players.forEach(p => {
         const li = document.createElement("li");
-        li.textContent = `${p.id} ${p.ready ? "yes" : "no"}`;
+        li.textContent = `${p.id} ${p.ready ? "Ready" : ""}`;
         ul.appendChild(li);
       });
     })
     .catch(err => console.error("Failed to fetch players", err));
+}
+
+function fetchHand() {
+  fetch(`/hand?id=${encodeURIComponent(playerId)}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("[DEBUG] Hand data:", data);  // ✅ print what server sent
+      const handDiv = document.getElementById("hand");
+      handDiv.innerHTML = "";
+
+      if (data.card1) {
+        const span1 = document.createElement("span");
+        span1.textContent = data.card1;
+        handDiv.appendChild(span1);
+      }
+      if (data.card2) {
+        const span2 = document.createElement("span");
+        span2.textContent = " " + data.card2;
+        handDiv.appendChild(span2);
+      }
+    })
+    .catch(err => {
+      console.error("Failed to fetch hand:", err);
+    });
 }
 
 
