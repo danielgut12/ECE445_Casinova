@@ -23,7 +23,7 @@ struct Player {
     Card card2;
     bool hasCard1 = false;
     bool hasCard2 = false;
-    bool active = true;
+    bool active = true; // if folded, false
     bool ready = false;
 };
 

@@ -23,6 +23,8 @@ socket.onopen = function () {
 socket.onmessage = function(event) {
   const data = JSON.parse(event.data);
 
+  console.log("WebSocket message:", data); // Always good for debugging
+
   if (data.players) {
     const ul = document.getElementById("players-ul");
     ul.innerHTML = "";
@@ -38,24 +40,35 @@ socket.onmessage = function(event) {
     fetchHand();  // fetch your updated hand automatically
   }
 
-  // Catches phas and community data from broadcastGameState()
+  if (data.event === "winner") {
+    console.log("Received winner event!");
+    const winnerArea = document.getElementById("winner-announcement");
+    winnerArea.innerText = `${data.winner} wins the hand!`;
+    winnerArea.style.display = "block";
+  }
+
   if (data.phase && data.community) {
     console.log("Received game state update!");
     console.log("Current Phase:", data.phase);
     console.log("Community Cards:", data.community);
 
-    // Example: Update the DOM
     document.getElementById("phase").textContent = `Next Phase: ${data.phase}`;
 
     const communityDiv = document.getElementById("community-cards");
     communityDiv.innerHTML = "";
     data.community.forEach(card => {
       const cardElem = document.createElement("div");
-      cardElem.textContent = card; // You can style this or use an image
+      cardElem.textContent = card;
       communityDiv.appendChild(cardElem);
     });
+
+    if (data.phase === "Waiting") {
+      document.getElementById("winner-announcement").innerText = "";
+      document.getElementById("winner-announcement").style.display = "none";
+    }
   }
 };
+
 
 
 
@@ -235,24 +248,38 @@ function fetchHand() {
     });
 }
 
+function fold() {
+  // const playerId = document.getElementById("player-id").innerText.replace("Logged in as ", "").trim();
+  console.log("Attempting to fold player:", playerId);
+
+  fetch("/fold", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `id=${encodeURIComponent(playerId)}`
+  })
+  .then(res => res.text())
+  .then(msg => {
+    console.log("Fold response:", msg);
+    // alert("You folded!");
+  })
+  .catch(err => {
+    console.error("Error folding:", err);
+    alert("Fold failed!");
+  });
+}
+
 
 
 window.addEventListener("DOMContentLoaded", () => {
-  console.log("thisran1")
   ensurePlayer();
-  console.log("thisran2")
   // setInterval(fetchGamestate, 2000);
 
   document.getElementById("captureBtn")?.addEventListener("click", capture);
   document.getElementById("ejectBtn")?.addEventListener("click", eject);
   document.getElementById("rotateBtn")?.addEventListener("click", rotate);
   document.getElementById("advanceGameBtn")?.addEventListener("click", advanceGame);
-  // document.getElementById("checkBtn")?.addEventListener("click", () => sendAction("check"));
-  // document.getElementById("raiseBtn")?.addEventListener("click", () => sendAction("raise"));
-  // document.getElementById("foldBtn")?.addEventListener("click", () => sendAction("fold"));
+  document.getElementById("foldBtn")?.addEventListener("click", fold);
   document.getElementById("readyBtn")?.addEventListener("click", sendReady);
-
-
 });
 
 // TO UPLOAD THESE FILES, use "pio run --target uploadfs"

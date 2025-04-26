@@ -8,6 +8,20 @@
 
 extern AsyncWebSocket ws;
 
+
+void announceWinner(const String& winnerId) {
+    StaticJsonDocument<256> doc;
+    doc["event"] = "winner";
+    doc["winner"] = winnerId;
+
+    String json;
+    serializeJson(doc, json);
+    ws.textAll(json);
+}
+
+
+
+
 void broadcastGameState() {
     StaticJsonDocument<512> doc;
 
@@ -42,7 +56,6 @@ void nextPhase() {
         if (players.size() >= 2) {
             currentPhase = PREFLOP;
         } else {
-            // Not enough players, stay in WAITING
             broadcastGameState();
             return;
         }
@@ -75,7 +88,6 @@ void nextPhase() {
 
         case SHOWDOWN:
             Serial.println("Showdown");
-            // Optionally display final hands
             currentPhase = RESET;
             break;
 
@@ -96,16 +108,40 @@ void nextPhase() {
 }
 
 
+
 void onPlayerAction(const String& id, const String& action) {
     if (players.count(id)) {
         players[id].action = action;
-        if (action == "fold") players[id].active = false;
-    }
+        if (action == "fold") {
+            players[id].active = false;
+            Serial.println(id + " is now folded (active = false)");
+        }
 
-    if (allActivePlayersActed()) {
-        nextPhase();
+        // Check if only one player left
+        int activePlayers = 0;
+        String lastStanding = "";
+        for (const auto& pair : players) {
+            if (pair.second.active) {
+                activePlayers++;
+                lastStanding = pair.first;
+            }
+        }
+
+        if (activePlayers == 1 && currentPhase != SHOWDOWN && currentPhase != RESET) {
+            Serial.println("Only one player left: " + lastStanding);
+            announceWinner(lastStanding);  // Tell clients who won
+            currentPhase = SHOWDOWN;
+            broadcastGameState();
+            return; // No need to check all actions anymore
+        }
+
+        // Normal flow: advance phase if everyone acted
+        if (allActivePlayersActed()) {
+            nextPhase();
+        }
     }
 }
+
 
 bool allActivePlayersActed() {
     for (auto &[id, p] : players)

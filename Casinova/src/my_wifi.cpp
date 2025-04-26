@@ -195,30 +195,7 @@ void initWifi() {
         broadcastPlayerList();
         request->send(200, "text/plain", id);
     });
-    
-    
-    
-    
-    // Action for Poker Route
-    server.on("/action", HTTP_POST, [](AsyncWebServerRequest *request){
-        Serial.println("POST /action triggered");
-        if (request->hasParam("plain", true)) {
-            String body = request->getParam("plain", true)->value();
-            StaticJsonDocument<200> doc;
-            DeserializationError error = deserializeJson(doc, body);
-    
-            if (!error) {
-                String id = doc["id"];
-                String action = doc["action"];
-                onPlayerAction(id, action);
-                request->send(200, "text/plain", "Action received");
-            } else {
-                request->send(400, "text/plain", "Invalid JSON");
-            }
-        } else {
-            request->send(400, "text/plain", "No body");
-        }
-    });
+
 
     // TESTING: increment phase
     server.on("/nextPhase", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -351,6 +328,27 @@ void initWifi() {
         serializeJson(doc, json);
         request->send(200, "application/json", json);
     });
+
+    server.on("/fold", HTTP_POST, [](AsyncWebServerRequest *request){
+        if (!request->hasParam("id", true)) {
+            request->send(400, "text/plain", "Missing player ID");
+            return;
+        }
+    
+        String playerId = request->getParam("id", true)->value();
+        if (players.count(playerId)) {
+            players[playerId].active = false;
+            players[playerId].action = "fold";
+            Serial.println(playerId + " has folded.");
+
+            onPlayerAction(playerId, "fold"); // triggers player action with fold action
+            request->send(200, "text/plain", "Folded");
+            broadcastGameState();
+        } else {
+            request->send(404, "text/plain", "Player not found");
+        }
+    });
+    
     
 
     server.begin();
