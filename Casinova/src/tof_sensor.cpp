@@ -4,33 +4,34 @@
 #define RXD2 41   // TOF10120 TX (White) → ESP32 RX
 #define TXD2 40   // TOF10120 RX (Yellow) → ESP32 TX
 
-static String distanceBuffer = "";  // Internal buffer
-
 void initTOFSensor() {
     Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
     Serial.println("TOF10120 Sensor Initialized.");
 }
 
-float getPlayerDistance() {
-    String distanceBuffer = "";
 
-    // Wait until a full number is received (with timeout safety)
-    unsigned long startTime = millis();
-    while (millis() - startTime < 100) { // wait max 100 ms
-        while (Serial2.available()) {
-            char c = Serial2.read();
+// --- Global ---
+static String distanceBuffer = "";
+static float latestDistance = -1.0;
 
-            if (c == '\n' || c == '\r') {
-                if (distanceBuffer.length() > 0) {
-                    return distanceBuffer.toFloat();
-                }
+// --- Call this often (inside loop!) ---
+void updatePlayerDistance() {
+    while (Serial2.available()) {
+        char c = Serial2.read();
+
+        if (c == '\n' || c == '\r') {
+            if (distanceBuffer.length() > 0) {
+                latestDistance = distanceBuffer.toFloat();
+                distanceBuffer = "";
             }
-            else if (isDigit(c) || c == '.' || c == '-') {
-                distanceBuffer += c;
-            }
-            // else: ignore weird chars
+        }
+        else if (isDigit(c) || c == '.' || c == '-') {
+            distanceBuffer += c;
         }
     }
+}
 
-    return -1.0; // No complete number after timeout
+// --- Call this whenever you want the latest reading ---
+float getPlayerDistance() {
+    return latestDistance;
 }

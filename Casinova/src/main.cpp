@@ -38,10 +38,10 @@ void setup() {
 }
 
 void loop() {
-  float dist = getPlayerDistance();
-  if (dist >= 0.0) {
-      Serial.printf("Distance: %.2f mm (%.2f in)\n", dist, dist / 25.4);
-  }
+  updatePlayerDistance(); // Keep this on so it constantly refreshes
+  // if (dist >= 0.0) {
+  //     Serial.printf("Distance: %.2f mm (%.2f in)\n", dist, dist / 25.4);
+  // }
   // capture_and_send();
   // delay(100000);
     // // Set motor direction clockwise
