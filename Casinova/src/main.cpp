@@ -23,7 +23,7 @@ void setup() {
   pinMode(dirPin, OUTPUT);
   // initStepper();
   initTOFSensor();
-  // initMotors();
+  initMotors();
   // initInputs();
   // init_camera(); // TURN BACK ON FOR CAMERA
   initWifi(); // TURN BACK ON FOR WIFI
@@ -31,8 +31,8 @@ void setup() {
   initMockDeck(); // Test deck without card detection
 
   // visual check
-  pinMode(42, OUTPUT);
-  digitalWrite(42, HIGH);
+  // pinMode(42, OUTPUT);
+  // digitalWrite(42, HIGH);
   delay(100);
 
 
@@ -42,13 +42,13 @@ void setup() {
 void loop() {
   updatePlayerDistance(); // Keep this on so it constantly refreshes
 
-    // Set motor direction clockwise
-    digitalWrite(dirPin, LOW);
+    // // Set motor direction clockwise
+    // digitalWrite(dirPin, LOW);
 
-    digitalWrite(stepPin, HIGH);
-    delayMicroseconds(3000); // Pulse HIGH for 1000 microseconds
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(3000); // Pulse LOW for 1000 microseconds
+    // digitalWrite(stepPin, HIGH);
+    // delayMicroseconds(3000); // Pulse HIGH for 1000 microseconds
+    // digitalWrite(stepPin, LOW);
+    // delayMicroseconds(3000); // Pulse LOW for 1000 microseconds
 
     // Spin motor slowly
     // for (int i = 0; i < 8; i++) {

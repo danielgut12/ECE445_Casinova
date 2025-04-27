@@ -5,6 +5,7 @@
 // Swivel Motor
 #define dirPin  20
 #define stepPin 21
+#define enablePin 2 // DON'T USE GPIO1 ITS FOR SERIAL STUFF AND IT WONT WORK
 #define STEPS_PER_REV 200
 #define MICROSTEPPING 1
 #define GEAR_RATIO 1
@@ -17,6 +18,12 @@ int currentPosition = 0;
 #define swivelPin   43
 #define queuePin    44
 
+
+void initMotors() {
+    pinMode(enablePin, OUTPUT); // set pin as output
+    digitalWrite(enablePin, HIGH); // DISABLE motor
+    Serial.println("fuck");
+}
 
 void setupSwivel() {
     pinMode(stepPin, OUTPUT);
@@ -110,6 +117,9 @@ void pushCardsWithDistance() {
 }
 
 void queueCard() {
+    // Enable the driver
+    digitalWrite(enablePin, LOW); // ENABLE active LOW
+
     // Set motor direction (clockwise)
     digitalWrite(dirPin, LOW);
 
@@ -120,6 +130,9 @@ void queueCard() {
         digitalWrite(stepPin, LOW);
         delayMicroseconds(8000); // Pulse LOW
     }
+
+    // Disable the driver after movement
+    digitalWrite(enablePin, HIGH); // DISABLE motor
 
     Serial.println("Card queued.");
 }

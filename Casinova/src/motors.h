@@ -1,6 +1,8 @@
 #ifndef MOTORS_H
 #define MOTORS_H
 
+
+void initMotors();
 void setupSwivel();
 void rotateToPlayer(int playerIndex, int totalPlayers);
 void rotateByDegrees(float degrees);
