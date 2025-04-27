@@ -123,12 +123,22 @@ void queueCard() {
     // Set motor direction (clockwise)
     digitalWrite(dirPin, LOW);
 
+    // Acceleration setup
+    int startDelay = 5000; // Start slow (bigger delay = slower)
+    int endDelay = 800;    // Final speed (your 8000us originally divided by 10)
+    int stepDelay = startDelay;
+
     // Step the motor one full revolution
     for (int i = 0; i < STEPS_PER_REV; i++) {
         digitalWrite(stepPin, HIGH);
-        delayMicroseconds(8000); // Pulse HIGH
+        delayMicroseconds(stepDelay);
         digitalWrite(stepPin, LOW);
-        delayMicroseconds(8000); // Pulse LOW
+        delayMicroseconds(stepDelay);
+
+        // Accelerate: gradually reduce stepDelay
+        if (stepDelay > endDelay) {
+            stepDelay -= 10; // Decrease delay slowly each step
+        }
     }
 
     // Disable the driver after movement
@@ -136,6 +146,8 @@ void queueCard() {
 
     Serial.println("Card queued.");
 }
+
+
 
 
 
