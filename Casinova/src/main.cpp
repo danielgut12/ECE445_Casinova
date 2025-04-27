@@ -23,12 +23,12 @@ void setup() {
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   // initStepper();
-  // initTOFSensor();
+  initTOFSensor();
   // initMotors();
   // initInputs();
   // initTOFSensor();
-  init_camera(); // TURN BACK ON FOR CAMERA
-  initWifi(); // TURN BACK ON FOR WIFI
+  // init_camera(); // TURN BACK ON FOR CAMERA
+  // initWifi(); // TURN BACK ON FOR WIFI
 
   initMockDeck(); // Test deck without card detection
 
@@ -39,6 +39,12 @@ void setup() {
 }
 
 void loop() {
+  float dist = getPlayerDistance();
+  if (dist >= 0.0) {
+      Serial.printf("Distance: %.2f mm (%.2f in)\n", dist, dist / 25.4);
+  }
+  
+  delay(100);
   // capture_and_send();
   // delay(100000);
     // // Set motor direction clockwise

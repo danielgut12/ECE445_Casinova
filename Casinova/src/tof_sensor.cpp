@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "tof_sensor.h"
 
-#define RXD2 39   // TOF10120 TX (White) → ESP32 RX
-#define TXD2 38   // TOF10120 RX (Yellow) → ESP32 TX
+#define RXD2 41   // TOF10120 TX (White) → ESP32 RX
+#define TXD2 40   // TOF10120 RX (Yellow) → ESP32 TX
 
 static String distanceBuffer = "";  // Internal buffer
 
@@ -12,19 +12,24 @@ void initTOFSensor() {
 }
 
 float getPlayerDistance() {
+    String distanceBuffer = "";
+
     while (Serial2.available()) {
         char c = Serial2.read();
 
         if (c == '\n' || c == '\r') {
             if (distanceBuffer.length() > 0) {
-                float dist = distanceBuffer.toFloat();
-                distanceBuffer = "";
-                return dist;
+                return distanceBuffer.toFloat();
             }
-        } else if (isDigit(c)) {
+        }
+        else if (isDigit(c) || c == '.' || c == '-') {
             distanceBuffer += c;
         }
+        // else: ignore weird characters
     }
 
-    return -1.0; // No new valid reading yet
+    return -1.0; // No complete reading yet
 }
+
+
+
