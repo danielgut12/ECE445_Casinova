@@ -54,6 +54,7 @@ void setup() {
 
 void loop() {
   updatePlayerDistance(); // Keep this on so it constantly refreshes
+  broadcastDistance();
 
   // rotateStepper(180);   // Rotate 180 degrees forward
   // delay(5000);          // Pause

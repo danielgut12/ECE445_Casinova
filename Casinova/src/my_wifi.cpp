@@ -6,6 +6,7 @@
 #include "motors.h"
 #include "game.h"
 #include "structs.h"
+#include "tof_sensor.h"
 #include <AsyncWebSocket.h>
 
 AsyncWebSocket ws("/ws");  // WebSocket endpoint
@@ -14,6 +15,30 @@ AsyncWebServer server(80);
 
 std::map<uint32_t, String> clientIdToPlayerId;  // WebSocket client ID → Player ID mapping
 extern std::map<String, Player> players;        // already existing players map
+
+
+// TOF Distance Sensor stuff
+unsigned long lastDistanceSent = 0;
+const unsigned long distanceInterval = 200; // every 200ms
+
+void broadcastDistance() {
+    unsigned long now = millis();
+    if (now - lastDistanceSent >= distanceInterval) {
+        lastDistanceSent = now;
+
+        float distance = getPlayerDistance();
+        if (distance >= 0.0) {
+            StaticJsonDocument<64> doc;
+            doc["type"] = "distance";
+            doc["distance"] = distance;
+
+            String json;
+            serializeJson(doc, json);
+            ws.textAll(json); // Send JSON to all connected clients
+            // Serial.println("Distance sent: " + json);
+        }
+    }
+}
 
 void broadcastPlayerList() {
     StaticJsonDocument<512> doc;

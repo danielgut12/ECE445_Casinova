@@ -83,6 +83,16 @@ socket.onmessage = function(event) {
       document.getElementById("winner-announcement").style.display = "none";
     }
   }
+
+  if (data.type === "distance") {
+    console.log("TOF Distance:", data.distance, "mm");
+
+    // Update the page if you want
+    const distanceLabel = document.getElementById("distance-label");
+    if (distanceLabel) {
+      distanceLabel.textContent = `Distance: ${data.distance.toFixed(2)} mm`;
+    }
+  }
 };
 
 
