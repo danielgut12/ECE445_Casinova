@@ -30,6 +30,40 @@ void setupSwivel() {
     pinMode(dirPin, OUTPUT);
 }
 
+void rotateStepper(int degrees) {
+    int steps = (abs(degrees) * TOTAL_STEPS) / 360;
+
+    digitalWrite(dirPin, degrees > 0 ? HIGH : LOW);
+
+    int startDelay = 12000;  // Super slow start
+    int endDelay = 3000;     // Slow cruising
+    int stepDelay = startDelay;
+    int accelSteps = steps * 3 / 4;
+    int decelStart = steps - accelSteps;
+
+    for (int i = 0; i < steps; i++) {
+        digitalWrite(stepPin, HIGH);
+        delayMicroseconds(stepDelay);
+        digitalWrite(stepPin, LOW);
+        delayMicroseconds(stepDelay);
+
+        // Super gentle ramp
+        if (i < accelSteps && stepDelay > endDelay) {
+            if (i % 2 == 0) stepDelay -= 1;
+        }
+        if (i > decelStart && stepDelay < startDelay) {
+            if (i % 2 == 0) stepDelay += 1;
+        }
+    }
+
+    Serial.print("Rotated ");
+    Serial.print(degrees);
+    Serial.println(" degrees (ultra smooth).");
+}
+
+
+
+
 void rotateToPlayer(int playerIndex, int totalPlayers) {
     float anglePerPlayer = 360.0 / totalPlayers;
     float targetAngle = anglePerPlayer * playerIndex;

@@ -4,6 +4,7 @@
 
 void initMotors();
 void setupSwivel();
+void rotateStepper(int degrees);
 void rotateToPlayer(int playerIndex, int totalPlayers);
 void rotateByDegrees(float degrees);
 void setupEjection();
