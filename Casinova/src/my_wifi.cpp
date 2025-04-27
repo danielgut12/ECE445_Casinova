@@ -170,6 +170,12 @@ void initWifi() {
         pushCardsWithDistance();
         request->send(200, "text/plain", "Auto Ejection triggered");
     });
+
+
+    server.on("/queueCard", HTTP_GET, [](AsyncWebServerRequest *request){
+        queueCard();
+        request->send(200, "text/plain", "Auto Ejection triggered");
+    });
     
 
     // Rotation route

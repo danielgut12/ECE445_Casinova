@@ -10,8 +10,8 @@
 #include "game.h"
 
 
-const int dirPin = 1;
-const int stepPin = 2;
+const int dirPin = 20;
+const int stepPin = 21;
 const int stepsPerRevolution = 200;
 
 
@@ -25,7 +25,6 @@ void setup() {
   initTOFSensor();
   // initMotors();
   // initInputs();
-  // initTOFSensor();
   // init_camera(); // TURN BACK ON FOR CAMERA
   initWifi(); // TURN BACK ON FOR WIFI
 
@@ -35,10 +34,44 @@ void setup() {
   pinMode(42, OUTPUT);
   digitalWrite(42, HIGH);
   delay(100);
+
+
+  
 }
 
 void loop() {
   updatePlayerDistance(); // Keep this on so it constantly refreshes
+
+    // Set motor direction clockwise
+    digitalWrite(dirPin, LOW);
+
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(3000); // Pulse HIGH for 1000 microseconds
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(3000); // Pulse LOW for 1000 microseconds
+
+    // Spin motor slowly
+    // for (int i = 0; i < 8; i++) {
+    //   for (int x = 0; x < stepsPerRevolution / 8; x++) {
+    //     digitalWrite(stepPin, HIGH);
+    //     delayMicroseconds(2000);  // 2000us = slow
+    //     digitalWrite(stepPin, LOW);
+    //     delayMicroseconds(2000);
+    //   }
+    //   delay(1000); // Wait a second
+    // }
+  
+    // // Set motor direction counterclockwise
+    // digitalWrite(dirPin, LOW);
+  
+    // // Spin motor quickly
+    // for (int x = 0; x < stepsPerRevolution; x++) {
+    //   digitalWrite(stepPin, HIGH);
+    //   delayMicroseconds(500);  // Faster stepping
+    //   digitalWrite(stepPin, LOW);
+    //   delayMicroseconds(500);
+    // }
+    // delay(1000); // Wait a second
   // if (dist >= 0.0) {
   //     Serial.printf("Distance: %.2f mm (%.2f in)\n", dist, dist / 25.4);
   // }

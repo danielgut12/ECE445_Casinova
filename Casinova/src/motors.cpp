@@ -3,8 +3,8 @@
 #include "tof_sensor.h"
 
 // Swivel Motor
-#define stepPin 1
-#define dirPin  2
+#define dirPin  20
+#define stepPin 21
 #define STEPS_PER_REV 200
 #define MICROSTEPPING 1
 #define GEAR_RATIO 1
@@ -107,6 +107,21 @@ void pushCardsWithDistance() {
     } else {
         Serial.println("No valid TOF reading, skipping ejection.");
     }
+}
+
+void queueCard() {
+    // Set motor direction (clockwise)
+    digitalWrite(dirPin, LOW);
+
+    // Step the motor one full revolution
+    for (int i = 0; i < STEPS_PER_REV; i++) {
+        digitalWrite(stepPin, HIGH);
+        delayMicroseconds(8000); // Pulse HIGH
+        digitalWrite(stepPin, LOW);
+        delayMicroseconds(8000); // Pulse LOW
+    }
+
+    Serial.println("Card queued.");
 }
 
 

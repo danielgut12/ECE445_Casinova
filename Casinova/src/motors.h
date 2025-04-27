@@ -8,5 +8,6 @@ void setupEjection();
 void runEjection(int distance_mm);
 void pushCardsWithDistance();
 void rotateToBoard();
+void queueCard();
 
 #endif
