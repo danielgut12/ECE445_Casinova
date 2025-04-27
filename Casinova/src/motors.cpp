@@ -22,7 +22,6 @@ int currentPosition = 0;
 void initMotors() {
     pinMode(enablePin, OUTPUT); // set pin as output
     digitalWrite(enablePin, HIGH); // DISABLE motor
-    Serial.println("fuck");
 }
 
 void setupSwivel() {
