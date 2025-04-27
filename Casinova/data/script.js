@@ -3,19 +3,19 @@ let captureCooldown = false;
 let isReady = false;
 
 // Poker Stuff
-let lookup = { rank: {}, flush: {} };
+// let lookup = { rank: {}, flush: {} };
 
 // Load lookup.json on page load
-fetch('/lookup.json')
-  .then(response => response.json())
-  .then(data => {
-    lookup = data;
-    console.log('Lookup loaded!');
-    document.getElementById('calculateBtn').disabled = false; // enable button
-  })
-  .catch(error => {
-    console.error('Failed to load lookup.json:', error);
-  });
+// fetch('/lookup.json')
+//   .then(response => response.json())
+//   .then(data => {
+//     lookup = data;
+//     console.log('Lookup loaded!');
+//     document.getElementById('calculateBtn').disabled = false; // enable button
+//   })
+//   .catch(error => {
+//     console.error('Failed to load lookup.json:', error);
+//   });
 
 
 // Web Sockets
