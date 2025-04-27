@@ -9,7 +9,6 @@
 #include "deck.h"
 #include "game.h"
 
-// MJPEGStreamer *streamer;
 
 const int dirPin = 1;
 const int stepPin = 2;
@@ -28,7 +27,7 @@ void setup() {
   // initInputs();
   // initTOFSensor();
   // init_camera(); // TURN BACK ON FOR CAMERA
-  // initWifi(); // TURN BACK ON FOR WIFI
+  initWifi(); // TURN BACK ON FOR WIFI
 
   initMockDeck(); // Test deck without card detection
 
@@ -43,8 +42,6 @@ void loop() {
   if (dist >= 0.0) {
       Serial.printf("Distance: %.2f mm (%.2f in)\n", dist, dist / 25.4);
   }
-  
-  delay(100);
   // capture_and_send();
   // delay(100000);
     // // Set motor direction clockwise

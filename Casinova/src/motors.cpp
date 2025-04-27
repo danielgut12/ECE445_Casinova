@@ -99,9 +99,16 @@ void runEjection(int distance_mm) {
 
 
 void pushCardsWithDistance() {
-    int distance = getPlayerDistance();
-    runEjection(distance);
+    float distance = getPlayerDistance();
+    Serial.printf("Distance: %.2f mm (%.2f in)\n", distance, distance / 25.4);
+    
+    if (distance >= 0.0) {
+        runEjection(distance);
+    } else {
+        Serial.println("No valid TOF reading, skipping ejection.");
+    }
 }
+
 
 
 // Rotates to board location (unknown atm does nothing)

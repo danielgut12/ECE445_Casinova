@@ -14,22 +14,23 @@ void initTOFSensor() {
 float getPlayerDistance() {
     String distanceBuffer = "";
 
-    while (Serial2.available()) {
-        char c = Serial2.read();
+    // Wait until a full number is received (with timeout safety)
+    unsigned long startTime = millis();
+    while (millis() - startTime < 100) { // wait max 100 ms
+        while (Serial2.available()) {
+            char c = Serial2.read();
 
-        if (c == '\n' || c == '\r') {
-            if (distanceBuffer.length() > 0) {
-                return distanceBuffer.toFloat();
+            if (c == '\n' || c == '\r') {
+                if (distanceBuffer.length() > 0) {
+                    return distanceBuffer.toFloat();
+                }
             }
+            else if (isDigit(c) || c == '.' || c == '-') {
+                distanceBuffer += c;
+            }
+            // else: ignore weird chars
         }
-        else if (isDigit(c) || c == '.' || c == '-') {
-            distanceBuffer += c;
-        }
-        // else: ignore weird characters
     }
 
-    return -1.0; // No complete reading yet
+    return -1.0; // No complete number after timeout
 }
-
-
-

@@ -115,6 +115,12 @@ function eject() {
       // .then(msg => alert(msg));
 }
 
+function autoEject() {
+  fetch('/autoEject')
+      .then(response => response.text())
+      // .then(msg => alert(msg));
+}
+
 function rotate() {
   const angle = document.getElementById('angleInput').value;
   fetch('/rotate?degrees=' + angle)
@@ -299,6 +305,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("captureBtn")?.addEventListener("click", capture);
   document.getElementById("ejectBtn")?.addEventListener("click", eject);
+  document.getElementById("autoEjectBtn")?.addEventListener("click", autoEject);
   document.getElementById("rotateBtn")?.addEventListener("click", rotate);
   document.getElementById("advanceGameBtn")?.addEventListener("click", advanceGame);
   document.getElementById("foldBtn")?.addEventListener("click", fold);
