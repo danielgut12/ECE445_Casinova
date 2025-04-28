@@ -9,6 +9,27 @@ cv['onRuntimeInitialized'] = () => {
 
   console.log("OpenCV is fully loaded.");
 
+
+  // -- Video Webcam Import Code
+  const videoElement = document.getElementById('videoInput');
+
+  // Start webcam
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then((stream) => {
+      videoElement.srcObject = stream;
+    })
+    .catch((err) => {
+      console.error("Failed to access webcam:", err);
+    });
+  // -- End of Video Code
+
+  function captureFrame(videoElement) {
+    const src = new cv.Mat(videoElement.height, videoElement.width, cv.CV_8UC4);
+    const cap = new cv.VideoCapture(videoElement);
+    cap.read(src);
+    return src; // Remember to delete it after processing!
+  }
+
   // DOM references
   const canvas = document.getElementById('canvasOutput');
   const suit = document.getElementById('suitDisplay');
@@ -73,7 +94,15 @@ cv['onRuntimeInitialized'] = () => {
       return;
     }
 
-    const src = cv.imread(imgElement);
+    // Rotates and loads original image
+    const src = captureFrame(videoElement); // <-- videoElement, not imgElement
+    // const src = cv.imread(imgElement); // import image
+    cv.transpose(src, src);
+    cv.flip(src, src, 0);
+    cv.resize(src, src, new cv.Size(360, 640));
+    let roiRect = new cv.Rect(100, 110, 120, 260);  // you pick these numbers
+    let roi = src.roi(roiRect);
+
     const gray = new cv.Mat();
     const binary = new cv.Mat();
     const contourOutput = new cv.Mat();
@@ -82,10 +111,10 @@ cv['onRuntimeInitialized'] = () => {
     let detectedRank = null;
 
     // Process image
-    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-    cv.GaussianBlur(gray, gray, new cv.Size(9, 9), 0);
+    cv.cvtColor(roi, gray, cv.COLOR_RGBA2GRAY);
+    cv.GaussianBlur(gray, gray, new cv.Size(1, 1), 0);
     let otsuThresh = cv.threshold(gray, new cv.Mat(), 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
-    let tweakedThreshold = otsuThresh + 30
+    let tweakedThreshold = otsuThresh - 10;
     cv.threshold(gray, binary, tweakedThreshold, 255, cv.THRESH_BINARY_INV);
     cv.cvtColor(binary, contourOutput, cv.COLOR_GRAY2RGB);
 
@@ -107,13 +136,14 @@ cv['onRuntimeInitialized'] = () => {
       const boxArea = rect.width * rect.height;
       const boxHeight = rect.height;
       const aspectRatio = rect.width / rect.height;
-
+      
       // Suit
       if (
-        boxArea >= 0 && boxArea <= 2500 &&
-        boxHeight >= 40 && boxHeight <= 50 &&
-        aspectRatio >= 0.7 && aspectRatio <= 1.1
+        boxArea >= 0 && boxArea <= 100000 &&
+        boxHeight >= 50 && boxHeight <= 100 &&
+        aspectRatio >= 0.50 && aspectRatio <= 0.8
       ) {
+        console.log("suit");
         cv.drawContours(contourOutput, contours, i, new cv.Scalar(255, 0, 0), 1);
         const resized = new cv.Mat();
         cv.resize(symbolROI, resized, new cv.Size(70, 100));
@@ -123,10 +153,11 @@ cv['onRuntimeInitialized'] = () => {
       }
       // Rank
       else if (
-        boxArea >= 0 && boxArea <= 4000 &&
-        boxHeight >= 60 && boxHeight <= 75 &&
-        aspectRatio >= 0.35 && aspectRatio <= 0.75
+        boxArea >= 0 && boxArea <= 10000 &&
+        boxHeight >= 90 && boxHeight <= 150 &&
+        aspectRatio >= 0.15 && aspectRatio <= 0.9
       ) {
+        console.log("rank");
         cv.drawContours(contourOutput, contours, i, new cv.Scalar(0, 255, 0), 1);
         const resized = new cv.Mat();
         cv.resize(symbolROI, resized, new cv.Size(70, 125));
