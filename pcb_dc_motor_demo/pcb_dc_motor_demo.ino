@@ -11,7 +11,17 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(ejectionPWMPin, HIGH);
+  analogWrite(ejectionPWMPin, 100); //ENA  pin
+  
+  digitalWrite(ejectionPinInput1,  LOW);
+  digitalWrite(ejectionPinInput2, HIGH);
+  delay(3000);
+
+  digitalWrite(ejectionPinInput1, LOW);
+  digitalWrite(ejectionPinInput2, LOW);
+  delay(3000);
+
+  analogWrite(ejectionPWMPin, 255); //ENA  pin
   
   digitalWrite(ejectionPinInput1,  LOW);
   digitalWrite(ejectionPinInput2, HIGH);
