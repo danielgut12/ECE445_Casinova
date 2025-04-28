@@ -13,15 +13,11 @@ void setup() {
 void loop() {
   digitalWrite(ejectionPWMPin, HIGH);
   
-  digitalWrite(ejectionPinInput1,  HIGH);
-  digitalWrite(ejectionPinInput2, LOW);
+  digitalWrite(ejectionPinInput1,  LOW);
+  digitalWrite(ejectionPinInput2, HIGH);
   delay(3000);
 
   digitalWrite(ejectionPinInput1, LOW);
   digitalWrite(ejectionPinInput2, LOW);
-  delay(3000);
-
-  digitalWrite(ejectionPinInput1,  LOW);
-  digitalWrite(ejectionPinInput2, HIGH);
   delay(3000);
 }
