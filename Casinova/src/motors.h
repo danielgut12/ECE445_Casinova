@@ -3,6 +3,10 @@
 
 
 void initMotors();
+void ejectCard(int power);
+void makeQuarterTurnCW();
+void makeQuarterTurnCCW();
+void resetToStart();
 void setupSwivel();
 void rotateStepper(int degrees);
 void rotateToPlayer(int playerIndex, int totalPlayers);

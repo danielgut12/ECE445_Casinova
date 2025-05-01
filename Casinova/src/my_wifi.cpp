@@ -189,6 +189,25 @@ void initWifi() {
         runEjection(distance);
         request->send(200, "text/plain", "Ejection triggered at " + String(distance) + " mm");
     });
+    server.on("/demoEject", HTTP_GET, [](AsyncWebServerRequest *request){
+        ejectCard(150);
+        request->send(200, "text/plain", "Eject Demo");
+    });
+
+    server.on("/rotateQuarterCW", HTTP_GET, [](AsyncWebServerRequest *request){
+        makeQuarterTurnCW();
+        request->send(200, "text/plain", "Eject Demo");
+    });
+    
+    server.on("/rotateQuarterCCW", HTTP_GET, [](AsyncWebServerRequest *request){
+        makeQuarterTurnCCW();
+        request->send(200, "text/plain", "Eject Demo");
+    });
+
+    server.on("/rotateReset", HTTP_GET, [](AsyncWebServerRequest *request){
+        resetToStart();
+        request->send(200, "text/plain", "Eject Demo");
+    });
 
     // Ejection with TOF sensor
     server.on("/autoEject", HTTP_GET, [](AsyncWebServerRequest *request){

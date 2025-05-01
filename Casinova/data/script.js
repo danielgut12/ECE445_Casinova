@@ -145,6 +145,24 @@ function rotate() {
       .then(response => response.text())
       // .then(msg => alert(msg));
 }
+
+
+function rotateQuarterCW() {
+  fetch('/rotateQuarterCW')
+      .then(response => response.text())
+}
+function rotateQuarterCCW() {
+  fetch('/rotateQuarterCCW')
+      .then(response => response.text())
+}
+function rotateReset() {
+  fetch('/rotateReset')
+      .then(response => response.text())
+}
+function demoEject() {
+  fetch('/demoEject')
+      .then(response => response.text())
+}
     
 async function ensurePlayer() {
   playerID = localStorage.getItem("playerId");
@@ -324,8 +342,13 @@ window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("captureBtn")?.addEventListener("click", capture);
   document.getElementById("ejectBtn")?.addEventListener("click", eject);
   document.getElementById("autoEjectBtn")?.addEventListener("click", autoEject);
+  document.getElementById("demoEjectBtn")?.addEventListener("click", demoEject);
   document.getElementById("queueCardBtn")?.addEventListener("click", queueCard);
   document.getElementById("rotateBtn")?.addEventListener("click", rotate);
+  document.getElementById("rotateQuarterCWBtn")?.addEventListener("click", rotateQuarterCW);
+  document.getElementById("rotateQuarterCCWBtn")?.addEventListener("click", rotateQuarterCCW);
+  document.getElementById("rotateResetBtn")?.addEventListener("click", rotateReset);
+  document.getElementById("demoEjectBtn")?.addEventListener("click", demoEject);
   document.getElementById("advanceGameBtn")?.addEventListener("click", advanceGame);
   document.getElementById("foldBtn")?.addEventListener("click", fold);
   document.getElementById("readyBtn")?.addEventListener("click", toggleReady);

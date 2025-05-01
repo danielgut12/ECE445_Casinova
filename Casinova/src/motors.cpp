@@ -19,15 +19,213 @@ int currentPosition = 0;
 #define queuePin    44
 
 
-void initMotors() {
-    pinMode(enablePin, OUTPUT); // set pin as output
-    digitalWrite(enablePin, HIGH); // DISABLE motor
+
+#define EJECTION_PIN_INPUT1 48
+#define EJECTION_PIN_INPUT2 21
+#define EJECTION_PWM_PIN 47
+
+#define SUPPLY_STEP_PIN 39
+#define SUPPLY_DIRECTION_PIN 38
+#define STEPS_PER_REVOLUTION 200
+
+#define SWIVEL_STEP_PIN 5
+#define SWIVEL_DIRECTION_PIN 4
+
+
+
+
+
+void setupEjection() {
+    pinMode(EJECTION_PIN_INPUT1, OUTPUT);
+    pinMode(EJECTION_PIN_INPUT2, OUTPUT);
+    pinMode(EJECTION_PWM_PIN, OUTPUT);
 }
 
 void setupSwivel() {
-    pinMode(stepPin, OUTPUT);
-    pinMode(dirPin, OUTPUT);
+    pinMode(SWIVEL_STEP_PIN, OUTPUT);
+    pinMode(SWIVEL_DIRECTION_PIN, OUTPUT);
 }
+
+void setupSupply() {
+    pinMode(SUPPLY_STEP_PIN, OUTPUT);
+    pinMode(SUPPLY_DIRECTION_PIN, OUTPUT);
+}
+void initMotors() {
+    setupEjection();
+    setupSwivel();
+    setupSupply();
+}
+
+void ejectCard(int power) {
+    analogWrite(EJECTION_PWM_PIN, 120); //ENA  pin
+  
+    // turn on ejection motor
+    digitalWrite(EJECTION_PIN_INPUT1,  LOW);
+    digitalWrite(EJECTION_PIN_INPUT2, HIGH);
+    delay(1000);
+  
+    // turn on supply motor
+    digitalWrite(SUPPLY_DIRECTION_PIN, HIGH);
+  
+    // Spin motor quickly
+    for(int x = 0; x < 4 * (STEPS_PER_REVOLUTION / 10); x++)
+    {
+      digitalWrite(SUPPLY_STEP_PIN, HIGH);
+      delayMicroseconds(4000);
+      digitalWrite(SUPPLY_STEP_PIN, LOW);
+      delayMicroseconds(4000);
+    }
+    delay(500);
+  
+    // turn off ejection motor
+    digitalWrite(EJECTION_PIN_INPUT1, LOW);
+    digitalWrite(EJECTION_PIN_INPUT2, LOW);
+    delay(1000);
+
+
+
+
+    analogWrite(EJECTION_PWM_PIN, 255); //ENA  pin
+  
+    // turn on ejection motor
+    digitalWrite(EJECTION_PIN_INPUT1,  LOW);
+    digitalWrite(EJECTION_PIN_INPUT2, HIGH);
+    delay(1000);
+  
+    // turn on supply motor
+    digitalWrite(SUPPLY_DIRECTION_PIN, HIGH);
+  
+    // Spin motor quickly
+    for(int x = 0; x < 4 * (STEPS_PER_REVOLUTION / 10); x++)
+    {
+      digitalWrite(SUPPLY_STEP_PIN, HIGH);
+      delayMicroseconds(4000);
+      digitalWrite(SUPPLY_STEP_PIN, LOW);
+      delayMicroseconds(4000);
+    }
+    delay(500);
+  
+    // turn off ejection motor
+    digitalWrite(EJECTION_PIN_INPUT1, LOW);
+    digitalWrite(EJECTION_PIN_INPUT2, LOW);
+    delay(1000);
+  }
+
+  void makeQuarterTurnCW() {
+    digitalWrite(SWIVEL_DIRECTION_PIN, LOW);
+  
+    // Spin motor acceleration
+    for (int x = 0; x < 10; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(14000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(14000);
+    }
+  
+    // Spin motor
+    for (int x = 0; x < 30; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(12000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(12000);
+    }
+
+    // Spin motor deceleration
+    for (int x = 0; x < 20; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(14000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(14000);
+    }
+
+    // Stopping the jiggle
+    digitalWrite(SWIVEL_DIRECTION_PIN, HIGH);
+    for (int x = 0; x < 2; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(14000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(14000);
+    }
+    digitalWrite(SWIVEL_DIRECTION_PIN, LOW);
+
+    
+}
+
+void makeQuarterTurnCCW() {
+    digitalWrite(SWIVEL_DIRECTION_PIN, HIGH);
+  
+    // Spin motor acceleration
+    for (int x = 0; x < 10; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(14000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(14000);
+    }
+  
+    // Spin motor
+    for (int x = 0; x < 30; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(12000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(12000);
+    }
+
+    // Spin motor deceleration
+    for (int x = 0; x < 20; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(14000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(14000);
+    }
+
+    // Stopping the jiggle
+    digitalWrite(SWIVEL_DIRECTION_PIN, HIGH);
+    for (int x = 0; x < 2; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(14000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(14000);
+    }
+    digitalWrite(SWIVEL_DIRECTION_PIN, HIGH);
+}
+
+void resetToStart() {
+    digitalWrite(SWIVEL_DIRECTION_PIN, HIGH);
+    for (int x = 0; x < STEPS_PER_REVOLUTION; x++) {
+        digitalWrite(SWIVEL_STEP_PIN, HIGH);
+        delayMicroseconds(12000);
+        digitalWrite(SWIVEL_STEP_PIN, LOW);
+        delayMicroseconds(12000);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void rotateStepper(int degrees) {
     int steps = (abs(degrees) * TOTAL_STEPS) / 360;
@@ -59,6 +257,13 @@ void rotateStepper(int degrees) {
     Serial.print(degrees);
     Serial.println(" degrees (ultra smooth).");
 }
+
+
+
+
+
+
+
 
 
 
@@ -111,10 +316,7 @@ void rotateByDegrees(float degrees) {
     currentPosition = (currentPosition + steps + TOTAL_STEPS) % TOTAL_STEPS;
 }
 
-void setupEjection() {
-    pinMode(ejectPin, OUTPUT);
-    digitalWrite(ejectPin, LOW);
-}
+
 
 void runEjection(int distance_mm) {
     // // Clamp distance between 0 and 2000 mm

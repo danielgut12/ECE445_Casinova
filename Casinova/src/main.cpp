@@ -27,23 +27,23 @@ void setup() {
   
   Serial.begin(115200);
 
-  pinMode(stepPin, OUTPUT);
-  pinMode(dirPin, OUTPUT);
+  // pinMode(stepPin, OUTPUT);
+  // pinMode(dirPin, OUTPUT);
   // initStepper();
-  initTOFSensor();
+  // initTOFSensor();
   initMotors();
   // initInputs();
   // init_camera(); // TURN BACK ON FOR CAMERA
   initWifi(); // TURN BACK ON FOR WIFI
 
-  initMockDeck(); // Test deck without card detection
+  // initMockDeck(); // Test deck without card detection
 
 
-  pinMode(stepPin, OUTPUT);
-  pinMode(dirPin, OUTPUT);
-  pinMode(enablePin, OUTPUT);
+  // pinMode(stepPin, OUTPUT);
+  // pinMode(dirPin, OUTPUT);
+  // pinMode(enablePin, OUTPUT);
 
-  digitalWrite(enablePin, LOW); // Enable motor driver
+  // digitalWrite(enablePin, LOW); // Enable motor driver
 
 
   // visual check
@@ -53,18 +53,16 @@ void setup() {
 }
 
 void loop() {
-  updatePlayerDistance(); // Keep this on so it constantly refreshes
-  broadcastDistance();
 
-  // rotateStepper(180);   // Rotate 180 degrees forward
-  // delay(5000);          // Pause
-  // rotateStepper(-180);  // Rotate 180 degrees backward
-  // delay(5000);          // Pause
-    // Set motor direction clockwise
-    digitalWrite(dirPin, LOW);
+  // for (int i = 0; i < 4; i++) {
+  //     makeQuarterTurn();
+  //     delay(1000);
+  //     ejectCard(170);
+  // }
+  
+  // resetToStart();
 
-    digitalWrite(stepPin, HIGH);
-    delayMicroseconds(3000); // Pulse HIGH for 1000 microseconds
-    digitalWrite(stepPin, LOW);
-    delayMicroseconds(3000); // Pulse LOW for 1000 microseconds
+  // delay(500);
+
 }
+
