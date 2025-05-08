@@ -318,3 +318,26 @@ Then you power your queue motor as described above. For testing purposes, I just
     delayMicroseconds(3000); // Pulse LOW for 1000 microseconds
 For the queue motor wheel which grabs the cards, I also put reverse sided tape (sticky side up) onto the wheel. At first, it would actualy queue the cards too fast, so I put at regular interfals downward facing tape to break up the stickieness. With that, the wheel almost "scooted" the cards forward at a pace where the ejection motor could recover speed from the previous ejection (prevent jams). In my testing, 3.5V launched aroudn like 1-4 feet, while 4 launched it the 6 foot distance.
 
+## **4/28/24-4/29/24: Demo Preparation**
+Finally soldered the PCB together, checking all the power lines to make sure it's good.
+Ditched the OV2640 camera as it wasn't consistent enough with pictures. Opted to use a webcam instead.
+With the image processing, decided to rewrite the code back into Python so it could be used on a Raspberry Pi instead of running on the client device.
+Worked with Danny to get the motors working in conjuction with eachother.
+Programmed a few different Demo actions for the machine:
+    Rotate CW (would rotate the machine 90 degrees CW)
+    Rotate CCW (would rotate the machine 90 degrees CCW)
+    Rotate Reset (would rotate the machine 360 degrees CCW, and was meant as a way to show the reset functionallity of the machine during demo)
+    Demo Eject (would start up the ejection motor at a set speed, then rotate the supply stepper motor to push card towards ejection motor, then would eject card)
+With these demonstration buttons coded into the machine and the backend, we verified they worked for the demonstration.
+
+Demo went well. We showed all the working parts we had prepared with minimal error. Happy with the results
+
+## **4/30/24: Presentation Preparation**
+We created the slide deck for the Casinova presentation, ahead of the Mock presentation deadline.
+Provided a summary of our experience during the whole process, as well as details regarding each subsystem.
+
+Update: Mock and Final Presentations went well.
+
+
+## **5/5/24-5/7/24: Final Report**
+Transfered a lot of our design document to the final report document. Worked on formatting everything correctly, as well as writing the abstract, detials about my own subsystems, and some concluding paragraphs. Danny fufilling his half. We're done with the Casinova for this semester.
