@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Casinova Controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js" defer></script>
+</head>
+<body>
+  <p id="player-id"></p>
+  <div class="section">
+    <button id="readyBtn">I'm Ready</button>
+  </div>
+  <div id="player-list" class="section">
+    <h2>Players</h2>
+    <ul id="players-ul"></ul>
+  </div>
+  <div id="your-hand" class="section">
+    <h2>Your Hand</h2>
+    <div id="hand"></div>
+  </div>
+  <div class="section">
+    <h2>Player Actions</h2>
+    <button id="foldBtn">Fold</button>
+  </div>
+  
+  <div id="game-controls" class="section">
+    <h2>Game Control</h2>
+    <button id="advanceGameBtn">Next Phase</button>
+    <p id="phase-status">Waiting for players...</p>
+    <p id="phase">Phase: Waiting</p> <!-- ADDED for live phase updates -->
+  </div>
+
+  <div id="community" class="section">
+    <h2>Community Cards</h2>
+    <div id="community-cards"></div>
+    <p id="winner-announcement" style="display:none; margin-top: 15px; font-size: 1.2rem; color: gold;"></p> <!-- 🔥 NEW -->
+  </div>
+  
+
+    <!-- <div class="section">
+      <h2>Player Actions</h2>
+      <button id="checkBtn">Check</button>
+      <button id="raiseBtn">Raise</button>
+      <button id="foldBtn">Fold</button>
+    </div>
+       -->
+</body>
+</html>

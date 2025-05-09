@@ -1,0 +1,17 @@
+#define CAM_PIN_PWDN    -1
+#define CAM_PIN_RESET   -1
+#define CAM_PIN_XCLK    12  // Verified works at 12 with oscilliscope
+#define CAM_PIN_SIOD    13   // data transfer good at 13
+#define CAM_PIN_SIOC    14  // data transfer good at 14
+
+#define CAM_PIN_D7      18
+#define CAM_PIN_D6      17
+#define CAM_PIN_D5      16
+#define CAM_PIN_D4      15
+#define CAM_PIN_D3       7
+#define CAM_PIN_D2       6
+#define CAM_PIN_D1       5
+#define CAM_PIN_D0       4
+#define CAM_PIN_VSYNC   10
+#define CAM_PIN_HREF     9
+#define CAM_PIN_PCLK    11  // Verified works at 11 with oscilliscope
